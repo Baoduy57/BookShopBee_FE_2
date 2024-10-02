@@ -1,5 +1,5 @@
 import { Badge, Button, Col, message, Popover } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   WrapperAccountHeader,
   WrapperContentPopover,
@@ -28,6 +28,8 @@ const HeaderComponent = () => {
     navigate("/Sign-In");
   };
   const dispatch = useDispatch();
+  const [userName, setUserName] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
   const [loading, setLoading] = useState(false);
 
   // const handleLogout = async () => {
@@ -56,6 +58,13 @@ const HeaderComponent = () => {
       setLoading(false); // Kết thúc loading sau khi quá trình kết thúc (thành công hoặc thất bại)
     }
   };
+
+  useEffect(() => {
+    setLoading(true);
+    setUserName(user?.name);
+    setUserAvatar(user?.avatar);
+    setLoading(false);
+  }, [user?.name, user?.avatar]);
 
   const content = (
     <div>
@@ -100,12 +109,26 @@ const HeaderComponent = () => {
         >
           <Loading isPending={loading}>
             <WrapperAccountHeader>
-              <UserOutlined style={{ fontSize: "30px" }} />
+              {userAvatar ? (
+                <img
+                  src={userAvatar}
+                  alt="avatar"
+                  style={{
+                    height: "30px",
+                    width: "30px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <UserOutlined style={{ fontSize: "30px" }} />
+              )}
+
               {user?.access_token ? (
                 <>
                   <Popover content={content} trigger={"click"}>
                     <div style={{ cursor: "pointer" }}>
-                      {user?.name?.length ? user?.name : user?.email}
+                      {userName?.length ? userName : user?.email}
                     </div>
                   </Popover>
                 </>
