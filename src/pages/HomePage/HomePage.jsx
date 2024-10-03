@@ -7,6 +7,8 @@ import slider2 from "../../assets/images/slider2.jpg";
 import slider3 from "../../assets/images/slider3.jpg";
 import CardComponent from "../../component/CardComponent/CardComponent";
 import NavbarComponent from "../../component/NavbarComponent/NavbarComponent";
+import { useQuery } from "@tanstack/react-query";
+import * as ProductService from "../../services/ProductService";
 
 const HomePage = () => {
   const arr = [
@@ -15,6 +17,19 @@ const HomePage = () => {
     "Sách Kinh dị, giật gân",
     "Sách truyền cảm hứng",
   ];
+
+  const fetchProductAll = async () => {
+    const res = await ProductService.getAllProduct();
+
+    return res;
+  };
+  const { isLoading, data: products } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchProductAll,
+    retry: 3,
+    retryDelay: 2000,
+  });
+  console.log("data: ", products);
   return (
     <>
       <div style={{ width: "1270px", margin: "0 auto" }}>
@@ -42,13 +57,22 @@ const HomePage = () => {
           ></SliderComponent>
 
           <WrapperProduct>
-            <CardComponent></CardComponent>
-            <CardComponent></CardComponent>
-            <CardComponent></CardComponent>
-            <CardComponent></CardComponent>
-            <CardComponent></CardComponent>
-            <CardComponent></CardComponent>
-            <CardComponent></CardComponent>
+            {products?.data?.map((product) => {
+              return (
+                <CardComponent
+                  key={product._id}
+                  countInStock={product.countInStock}
+                  description={product.description}
+                  image={product.image}
+                  name={product.name}
+                  price={product.price}
+                  rating={product.rating}
+                  type={product.type}
+                  discount={product.discount}
+                  selled={product.selled}
+                ></CardComponent>
+              );
+            })}
           </WrapperProduct>
           {/* <NavbarComponent></NavbarComponent> */}
 

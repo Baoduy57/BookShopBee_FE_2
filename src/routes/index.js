@@ -7,7 +7,7 @@ import ProfilePage from "../pages/ProfilePage/ProfilePage";
 import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
 import TypeProductPage from "../pages/TypeProductPage/TypeProductPage";
-
+import AdminPage from "../pages/AdminPage/AdminPage";
 export const routes = [
   {
     path: "/",
@@ -48,6 +48,12 @@ export const routes = [
     path: "/Profile-User",
     page: ProfilePage,
     isShowHeader: true,
+  },
+  {
+    path: "/System/Admin",
+    page: AdminPage,
+    isShowHeader: false,
+    isPrivate: true,
   },
   {
     path: "*",
