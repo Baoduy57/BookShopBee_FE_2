@@ -15,3 +15,13 @@ export const getBase64 = (file) => {
     reader.onerror = (error) => reject(error);
   });
 };
+
+export const getItem = (label, key, icon, children, type) => {
+  return {
+    label,
+    key,
+    icon,
+    children,
+    type,
+  };
+};
