@@ -30,6 +30,7 @@ function App() {
     if (decoded?.id) {
       handleGetDetailsUser(decoded?.id, storageData);
     }
+    setIsLoading(false); // Kết thúc loading sau khi quá trình kết thúc (thành công hoặc thất bại)
   }, []);
 
   const dispatch = useDispatch();
@@ -40,7 +41,6 @@ function App() {
     } catch (error) {
       console.error("Failed to get user details:", error); // Xử lý lỗi nếu có
     }
-    setIsLoading(false); // Kết thúc loading sau khi quá trình kết thúc (thành công hoặc thất bại)
   };
 
   UserService.axiosJWT.interceptors.request.use(
