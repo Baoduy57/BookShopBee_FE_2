@@ -3,41 +3,31 @@ import React, { useState } from "react";
 import { AppstoreOutlined, UserOutlined } from "@ant-design/icons";
 import { getItem } from "../../utils";
 import HeaderComponent from "../../component/HeaderComponent/HeaderComponent";
+import AdminUser from "../../component/AdminUser/AdminUser";
+import AdminProduct from "../../component/AdminProduct/AdminProduct";
 
 const AdminPage = () => {
   const items = [
-    getItem("User", "sub1", <UserOutlined />, [
-      getItem("Option 1", "1"),
-      getItem("Option 2", "2"),
-      getItem("Option 3", "3"),
-      getItem("Option 4", "4"),
-    ]),
-    getItem("Product", "sub2", <AppstoreOutlined />, [
-      getItem("Option 5", "5"),
-      getItem("Option 6", "6"),
-      getItem("Submenu", "sub3", null, [
-        getItem("Option 7", "7"),
-        getItem("Option 8", "8"),
-      ]),
-    ]),
+    getItem("User", "user", <UserOutlined />),
+    getItem("Product", "product", <AppstoreOutlined />),
   ];
 
-  const rootSubmenuKeys = ["user", "product"];
-  const [openKeys, setOpenKeys] = useState(["user"]);
   const [selectedKeys, setSelectedKeys] = useState("");
-
-  const onOpenChange = (keys) => {
-    const latesOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
-    if (rootSubmenuKeys.indexOf(latesOpenKey) === -1) {
-      setOpenKeys(keys);
-    } else {
-      setOpenKeys(latesOpenKey ? [latesOpenKey] : []);
+  const renderPage = (key) => {
+    switch (key) {
+      case "user":
+        return <AdminUser />;
+      case "product":
+        return <AdminProduct />;
+      default:
+        return <></>;
     }
   };
 
   const handleOnClick = ({ key }) => {
     setSelectedKeys(key);
   };
+  console.log("selectedKeys", selectedKeys);
 
   return (
     <>
@@ -45,16 +35,16 @@ const AdminPage = () => {
       <div style={{ display: "flex" }}>
         <Menu
           mode="inline"
-          openKeys={openKeys}
-          onOpenChange={onOpenChange}
           style={{
+            boxShadow: "1px 1px 2px #ccc",
             width: 256,
+            height: "100vh",
           }}
           items={items}
           onClick={handleOnClick}
         />
-        <div style={{ flex: 1 }}>
-          {selectedKeys === "6" && <span>Key is 6</span>}
+        <div style={{ flex: 1, padding: "15px" }}>
+          {renderPage(selectedKeys)}
         </div>
       </div>
     </>
