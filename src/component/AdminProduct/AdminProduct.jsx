@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { WrapperHeader } from "./style";
 import { Button, Form, message, Modal } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import TableComponent from "../TableComponent/TableComponent";
 import InputComponent from "../InputComponent/InputComponent";
 import { WrapperUploadFile } from "../../component/AdminProduct/style";
@@ -10,9 +10,23 @@ import { useMutationHooks } from "../../hooks/useMutationHook";
 import * as ProductService from "../../services/ProductService";
 import Loading from "../LoadingComponent/Loading";
 import * as Message from "../../component/Message/Message";
+import { useQuery } from "@tanstack/react-query";
 
 const AdminProduct = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const renderAction = () => {
+    return (
+      <div>
+        <DeleteOutlined
+          style={{ color: "red", fontSize: "25px", cursor: "pointer" }}
+        ></DeleteOutlined>
+        <EditOutlined
+          style={{ color: "orange", fontSize: "25px", cursor: "pointer" }}
+        ></EditOutlined>
+      </div>
+    );
+  };
 
   const [stateProduct, setStateProduct] = useState({
     name: "",
@@ -40,6 +54,47 @@ const AdminProduct = () => {
     return res;
   });
 
+  const getAllProducts = async () => {
+    const res = await ProductService.getAllProduct();
+    return res;
+  };
+
+  const { isLoading: isLoadingProducts, data: products } = useQuery({
+    queryKey: ["products"],
+    queryFn: getAllProducts,
+  });
+  console.log("products", products);
+
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      render: (text) => <a>{text}</a>,
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+    },
+    {
+      title: "Rating",
+      dataIndex: "rating",
+    },
+    {
+      title: "Type",
+      dataIndex: "type",
+    },
+    {
+      title: "Action",
+      dataIndex: "action",
+      render: renderAction,
+    },
+  ];
+  const dataTable =
+    products?.data?.length &&
+    products?.data?.map((product) => {
+      return { ...product, key: product._id };
+    });
+
   const { data, isPending, isSuccess, isError } = mutation;
 
   useEffect(() => {
@@ -50,6 +105,8 @@ const AdminProduct = () => {
       Message.error();
     }
   }, [isSuccess, isError]);
+
+  const [form] = Form.useForm();
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -62,6 +119,7 @@ const AdminProduct = () => {
       rating: "",
       image: "",
     });
+    form.resetFields();
   };
 
   const onFinish = () => {
@@ -111,24 +169,28 @@ const AdminProduct = () => {
       </div>
 
       <div style={{ marginTop: "20px" }}>
-        <TableComponent></TableComponent>
+        <TableComponent
+          columns={columns}
+          isPending={isLoadingProducts}
+          data={dataTable}
+        ></TableComponent>
       </div>
 
       <Modal
         title="Create Product"
         open={isModalOpen}
         onCancel={handleCancel}
-        okText=""
+        footer={null}
       >
         <Loading isPending={isPending}>
           <Form
             name="basic"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 16 }}
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 18 }}
             style={{ maxWidth: 600 }}
-            initialValues={{ remember: true }}
             onFinish={onFinish}
-            autoComplete="off"
+            autoComplete="on"
+            form={form}
           >
             <Form.Item
               label="Name"
@@ -229,7 +291,7 @@ const AdminProduct = () => {
               </WrapperUploadFile>
             </Form.Item>
 
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
               <Button type="primary" htmlType="submit">
                 Submit
               </Button>

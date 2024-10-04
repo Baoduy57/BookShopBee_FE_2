@@ -38,7 +38,6 @@ const AdminPage = () => {
           style={{
             boxShadow: "1px 1px 2px #ccc",
             width: 256,
-            height: "100vh",
           }}
           items={items}
           onClick={handleOnClick}
