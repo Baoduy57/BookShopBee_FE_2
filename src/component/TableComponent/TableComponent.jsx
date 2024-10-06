@@ -30,6 +30,7 @@ const TableComponent = (props) => {
         rowSelection={{ type: selectionType, ...rowSelection }}
         columns={columns}
         dataSource={data}
+        {...props}
       />
     </Loading>
   );
