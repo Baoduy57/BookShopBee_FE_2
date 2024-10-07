@@ -7,6 +7,7 @@ export const loginUser = async (data) => {
     `${process.env.REACT_APP_API_TEST}/user/Sign-In`,
     data
   );
+  console.log("Login response:", res);
   return res.data;
 };
 
@@ -28,6 +29,42 @@ export const getDetailsUser = async (id, access_token) => {
     }
   );
   return res.data;
+};
+
+// export const getAllUser = async (access_token) => {
+//   console.log("Access Token:", access_token);
+//   const res = await axiosJWT.get(
+//     `${process.env.REACT_APP_API_TEST}/user/GetAll/`,
+//     {
+//       headers: {
+//         token: `Bearer ${access_token}`,
+//       },
+//     }
+//   );
+//   return res.data;
+// };
+export const getAllUser = async () => {
+  const access_token = JSON.parse(localStorage.getItem("access_token"));
+  if (!access_token) {
+    console.error("No access token found");
+    return;
+  }
+  console.log("Sending request with token:", access_token);
+  try {
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_TEST}/user/GetAll/`,
+      {
+        headers: {
+          token: `Bearer ${access_token}`,
+        },
+      }
+    );
+    console.log("Response:", res.data);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching users:", error.response || error);
+    // Có thể xử lý thêm ở đây
+  }
 };
 
 // export const getDetailsUser = async (id, access_token) => {
@@ -101,3 +138,16 @@ export const updateUser = async (id, data, access_token) => {
 //     );
 //   }
 // };
+
+export const deleteUser = async (id, access_token) => {
+  const res = await axiosJWT.delete(
+    `${process.env.REACT_APP_API_TEST}/user/Delete-User/${id}`,
+
+    {
+      headers: {
+        token: `Bearer ${access_token}`,
+      },
+    }
+  );
+  return res.data;
+};

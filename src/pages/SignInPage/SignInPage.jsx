@@ -52,22 +52,6 @@ const SignInPage = () => {
 
   const { data, isPending, isSuccess, isError } = mutation;
 
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     navigate("/");
-  //     localStorage.setItem("access_token", JSON.stringify(data?.access_token)); // Lưu access token vào localStorage
-  //     // console.log("data", data);
-  //     if (data?.access_token) {
-  //       const decoded = jwtDecode(data?.access_token); // Giải mã token bằng jwtDecode
-  //       console.log("decoded", decoded);
-
-  //       if (decoded?.id) {
-  //         handleGetDetailsUser(decoded?.id, data?.access_token);
-  //       }
-  //     }
-  //   }
-  // }, [isSuccess, data?.access_token, navigate]); // Đảm bảo tất cả phụ thuộc liên quan đều có mặt
-
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
       // Chỉ điều hướng nếu đăng nhập thành công

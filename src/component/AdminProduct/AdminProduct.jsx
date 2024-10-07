@@ -552,6 +552,7 @@ const AdminProduct = () => {
       </div>
 
       <ModalComponent
+        forceRender
         title="Create Product"
         open={isModalOpen}
         onCancel={handleCancel}
