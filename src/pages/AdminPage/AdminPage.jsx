@@ -20,14 +20,13 @@ const AdminPage = () => {
       case "product":
         return <AdminProduct />;
       default:
-        return <></>;
+        return;
     }
   };
 
   const handleOnClick = ({ key }) => {
     setSelectedKeys(key);
   };
-  console.log("selectedKeys", selectedKeys);
 
   return (
     <>
