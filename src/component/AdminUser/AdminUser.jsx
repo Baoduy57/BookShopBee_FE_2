@@ -61,11 +61,12 @@ const AdminUser = () => {
     return res;
   });
 
-  // const getAllUsers = async () => {
-  //   const res = await UserService.getAllUser();
-  //   console.log("res", res);
-  //   return res;
-  // };
+  const mutationDeletedMany = useMutationHooks((data) => {
+    const { token, ...ids } = data;
+
+    const res = UserService.deleteManyUser(ids, token);
+    return res;
+  });
   const getAllUsers = async () => {
     const res = await UserService.getAllUser(); // Truyền token vào API
     return res;
@@ -107,10 +108,11 @@ const AdminUser = () => {
   }, [form, stateUserDetails]);
 
   useEffect(() => {
-    if (rowSelected) {
+    if (rowSelected && isOpenDrawer) {
+      setIsPendingUpdate(true);
       fetchGetDetailsUser(rowSelected);
     }
-  }, [rowSelected]);
+  }, [rowSelected, isOpenDrawer]);
 
   const handleEditProduct = () => {
     if (rowSelected) {
@@ -118,6 +120,17 @@ const AdminUser = () => {
       fetchGetDetailsUser(rowSelected);
     }
     setIsOpenDrawer(true);
+  };
+
+  const handleDeleteManyUser = (ids) => {
+    mutationDeletedMany.mutate(
+      { ids: ids, token: user?.access_token },
+      {
+        onSettled: () => {
+          queryUser.refetch();
+        },
+      }
+    );
   };
 
   const {
@@ -132,6 +145,13 @@ const AdminUser = () => {
     isSuccess: isSuccessDeleted,
     isError: isErrorDeleted,
   } = mutationDeleted;
+
+  const {
+    data: dataDeletedMany,
+    isPending: isPendingDeletedMany,
+    isSuccess: isSuccessDeletedMany,
+    isError: isErrorDeletedMany,
+  } = mutationDeletedMany;
 
   const queryUser = useQuery({
     queryKey: ["users"],
@@ -325,6 +345,14 @@ const AdminUser = () => {
     }
   }, [isSuccessDeleted, isErrorDeleted, dataDeleted]);
 
+  useEffect(() => {
+    if (isSuccessDeletedMany && dataDeletedMany?.status === "OK") {
+      Message.success();
+    } else if (isErrorDeletedMany) {
+      Message.error();
+    }
+  }, [isSuccessDeletedMany, isErrorDeletedMany]);
+
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
     setstateUserDetails({
@@ -451,6 +479,7 @@ const AdminUser = () => {
 
       <div style={{ marginTop: "20px" }}>
         <TableComponent
+          handleDeleteMany={handleDeleteManyUser}
           columns={columns}
           isPending={isLoadingUsers}
           data={dataTable}

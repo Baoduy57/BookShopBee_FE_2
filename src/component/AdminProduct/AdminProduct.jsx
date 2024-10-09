@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { WrapperHeader } from "./style";
-import { Button, Form, message, Modal, Space } from "antd";
+import { Button, Form, Space } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -88,6 +88,13 @@ const AdminProduct = () => {
     return res;
   });
 
+  const mutationDeletedMany = useMutationHooks((data) => {
+    const { token, ...ids } = data;
+
+    const res = ProductService.deleteManyProduct(ids, token);
+    return res;
+  });
+
   const getAllProducts = async () => {
     const res = await ProductService.getAllProduct();
     return res;
@@ -114,11 +121,11 @@ const AdminProduct = () => {
   }, [form, stateProductDetails]);
 
   useEffect(() => {
-    if (rowSelected) {
+    if (rowSelected && isOpenDrawer) {
       setIsPendingUpdate(true);
       fetchGetDetailsProduct(rowSelected);
     }
-  }, [rowSelected]);
+  }, [rowSelected, isOpenDrawer]);
 
   const handleEditProduct = () => {
     // if (rowSelected) {
@@ -126,6 +133,17 @@ const AdminProduct = () => {
     //   fetchGetDetailsProduct(rowSelected);
     // }
     setIsOpenDrawer(true);
+  };
+
+  const handleDeleteManyProduct = (ids) => {
+    mutationDeletedMany.mutate(
+      { ids: ids, token: user?.access_token },
+      {
+        onSettled: () => {
+          queryProduct.refetch();
+        },
+      }
+    );
   };
 
   const { data, isPending, isSuccess, isError } = mutation;
@@ -141,6 +159,12 @@ const AdminProduct = () => {
     isSuccess: isSuccessDeleted,
     isError: isErrorDeleted,
   } = mutationDeleted;
+  const {
+    data: dataDeletedMany,
+    isPending: isPendingDeletedMany,
+    isSuccess: isSuccessDeletedMany,
+    isError: isErrorDeletedMany,
+  } = mutationDeletedMany;
 
   const queryProduct = useQuery({
     queryKey: ["products"],
@@ -366,6 +390,14 @@ const AdminProduct = () => {
     }
   }, [isSuccessDeleted, isErrorDeleted]);
 
+  useEffect(() => {
+    if (isSuccessDeletedMany && dataDeletedMany?.status === "OK") {
+      Message.success();
+    } else if (isErrorDeletedMany) {
+      Message.error();
+    }
+  }, [isSuccessDeletedMany, isErrorDeletedMany]);
+
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
     setStateProductDetails({
@@ -538,6 +570,7 @@ const AdminProduct = () => {
 
       <div style={{ marginTop: "20px" }}>
         <TableComponent
+          handleDeleteMany={handleDeleteManyProduct}
           columns={columns}
           isPending={isLoadingProducts}
           data={dataTable}

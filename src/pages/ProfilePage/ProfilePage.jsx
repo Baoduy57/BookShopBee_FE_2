@@ -18,6 +18,8 @@ import { getBase64 } from "../../utils";
 import { UploadOutlined } from "@ant-design/icons";
 
 const ProfilePage = () => {
+  // useSelector: Lấy thông tin người dùng từ Redux store, bao gồm các giá trị như name, email, phone, address, và avatar.
+  // useState: Sử dụng useState để lưu trữ và cập nhật giá trị nhập từ người dùng trên giao diện
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [name, setName] = useState("");
@@ -26,6 +28,7 @@ const ProfilePage = () => {
   const [address, setAddress] = useState("");
   const [avatar, setAvatar] = useState("");
 
+  // useMutationHooks: Được sử dụng để thực hiện yêu cầu cập nhật người dùng đến server thông qua dịch vụ UserService.updateUser.
   const mutation = useMutationHooks(async (data) => {
     const { id, access_token, ...rests } = data;
     // Gọi đúng thứ tự tham số: id, data, access_token
@@ -33,7 +36,7 @@ const ProfilePage = () => {
   });
 
   const { data, isPending, isSuccess, isError } = mutation;
-  console.log("data", data);
+  // useEffect: Khi thành phần được tải lần đầu hoặc khi thông tin người dùng thay đổi, các trường thông tin cá nhân sẽ được đặt với giá trị hiện tại của người dùng từ Redux store.
   useEffect(() => {
     setName(user?.name);
     setEmail(user?.email);
@@ -42,6 +45,7 @@ const ProfilePage = () => {
     setAvatar(user?.avatar);
   }, [user]);
 
+  // useEffect: Kiểm tra trạng thái của yêu cầu cập nhật. Nếu thành công, thông tin người dùng được cập nhật trong Redux và thông báo thành công sẽ hiện lên. Nếu thất bại, sẽ hiển thị thông báo lỗi.
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
       message.success("User updated successfully");
@@ -81,6 +85,7 @@ const ProfilePage = () => {
   const handleOnchangeAddress = (value) => {
     setAddress(value);
   };
+  // handleOnchangeAvatar: Khi người dùng chọn tệp ảnh mới, hàm này sẽ xử lý việc chuyển ảnh thành định dạng base64 và lưu vào state avatar.
   const handleOnchangeAvatar = async ({ fileList }) => {
     // Kiểm tra file đầu tiên có tồn tại không
     const file = fileList[0];
@@ -107,6 +112,7 @@ const ProfilePage = () => {
   //   // console.log("Update", name, email, phone, address, avatar);
   // };
 
+  // handleUpdate: Gọi hàm mutateAsync để gửi yêu cầu cập nhật thông tin người dùng với các giá trị mới.
   const handleUpdate = async () => {
     mutation.mutateAsync({
       id: user?.id,
