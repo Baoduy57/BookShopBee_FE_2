@@ -12,9 +12,11 @@ import * as UserService from "./services/UserService";
 import Loading from "./component/LoadingComponent/Loading";
 
 function App() {
+  // Redux State (user): Truy cập vào state user từ Redux store, chứa thông tin về người dùng đã đăng nhập.
   const user = useSelector((state) => state.user);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Hàm này lấy access_token từ localStorage, kiểm tra xem nó có phải chuỗi JSON hợp lệ không, sau đó giải mã JWT bằng jwtDecode và trả về token đã giải mã cùng với token thô.
   const handleDecoded = () => {
     let storageData = localStorage.getItem("access_token");
     let decoded = {};
@@ -24,6 +26,9 @@ function App() {
     }
     return { decoded, storageData };
   };
+
+  // Mục đích: Chạy khi component được render lần đầu. Bắt đầu bằng việc thiết lập isLoading thành true, giải mã JWT để lấy ID người dùng và gọi handleGetDetailsUser để lấy thông tin người dùng từ server. Sau đó, thiết lập lại isLoading thành false.
+  // Dependencies: Vì [] được truyền vào, nó chỉ chạy một lần sau khi component được render.
   useEffect(() => {
     setIsLoading(true);
     const { storageData, decoded } = handleDecoded();
@@ -34,6 +39,8 @@ function App() {
   }, []);
 
   const dispatch = useDispatch();
+
+  // Mục đích: Gửi yêu cầu API lấy thông tin người dùng từ server qua UserService.getDetailsUser. Nếu thành công, nó sẽ cập nhật Redux store với thông tin người dùng và access token thông qua updateUser.
   const handleGetDetailsUser = async (id, token) => {
     try {
       const res = await UserService.getDetailsUser(id, token); // Gọi API lấy thông tin người dùng
@@ -43,6 +50,7 @@ function App() {
     }
   };
 
+  // Mục đích: Interceptor của Axios kiểm tra xem JWT có hết hạn trước khi thực hiện mỗi yêu cầu không. Nếu token đã hết hạn, nó sẽ cố gắng refresh token và đính kèm token mới vào header của yêu cầu. Nếu việc refresh token thất bại, có thể chuyển hướng người dùng về trang đăng nhập.
   UserService.axiosJWT.interceptors.request.use(
     async (config) => {
       const currentTime = new Date();

@@ -20,12 +20,15 @@ import { useDispatch } from "react-redux";
 import { updateUser } from "../../redux/slides/userSlide";
 
 const SignInPage = () => {
+  // isShowPassword: Điều khiển việc hiển thị mật khẩu dưới dạng text hoặc dấu sao.
   const [isShowPassword, setIsShowPassword] = useState(false);
+  // email, password: Lưu trữ giá trị email và mật khẩu người dùng nhập vào.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
 
+  // Các hàm xử lý sự kiện handleOnchangeEmail và handleOnchangePassword được sử dụng để cập nhật email và password dựa trên input từ người dùng.
   const handleOnchangeEmail = (value) => {
     setEmail(value);
   };
@@ -34,6 +37,7 @@ const SignInPage = () => {
     setPassword(value);
   };
 
+  // Khi người dùng bấm nút "Login", hàm handleSignIn được gọi và thực hiện yêu cầu đăng nhập bằng cách gọi mutation.mutate từ hook useMutationHooks.
   const handleSignIn = () => {
     mutation.mutate({
       email,
@@ -47,11 +51,13 @@ const SignInPage = () => {
     navigate("/Sign-Up");
   };
 
+  // useMutationHooks: Đây là một hook tùy chỉnh để xử lý các hành động bất đồng bộ (asynchronous actions) như gọi API.
+  // UserService.loginUser: Hàm này sẽ gửi yêu cầu đăng nhập đến backend.
   const mutation = useMutationHooks((data) => UserService.loginUser(data));
-  console.log("mutation", mutation);
 
   const { data, isPending, isSuccess, isError } = mutation;
 
+  // Nếu đăng nhập thành công (isSuccess), token sẽ được lưu vào localStorage, và thông tin người dùng được giải mã bằng jwtDecode. Sau đó, người dùng sẽ được chuyển hướng về trang chính.
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
       // Chỉ điều hướng nếu đăng nhập thành công
@@ -70,6 +76,7 @@ const SignInPage = () => {
     }
   }, [isSuccess, isError, data?.access_token, data?.message, navigate]);
 
+  // Sau khi đăng nhập thành công, hàm này được gọi để lấy chi tiết thông tin người dùng và cập nhật vào Redux store thông qua dispatch(updateUser).
   const handleGetDetailsUser = async (id, token) => {
     const res = await UserService.getDetailsUser(id, token);
     dispatch(updateUser({ ...res?.data, access_token: token }));

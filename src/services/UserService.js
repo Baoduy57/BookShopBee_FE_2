@@ -19,16 +19,39 @@ export const signupUser = async (data) => {
   return res.data;
 };
 
-export const getDetailsUser = async (id, access_token) => {
-  const res = await axiosJWT.get(
-    `${process.env.REACT_APP_API_TEST}/user/Get-Details/${id}`,
-    {
-      headers: {
-        token: `Bearer ${access_token}`,
-      },
-    }
-  );
-  return res.data;
+// export const getDetailsUser = async (id, access_token) => {
+//   const res = await axiosJWT.get(
+//     `${process.env.REACT_APP_API_TEST}/user/Get-Details/${id}`,
+//     {
+//       headers: {
+//         token: `Bearer ${access_token}`,
+//       },
+//     }
+//   );
+//   return res.data;
+// };
+export const getDetailsUser = async (id) => {
+  const access_token = JSON.parse(localStorage.getItem("access_token"));
+  if (!access_token) {
+    console.error("No access token found");
+    return;
+  }
+
+  try {
+    const res = await axiosJWT.get(
+      `${process.env.REACT_APP_API_TEST}/user/Get-Details/${id}`,
+      {
+        headers: {
+          token: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching user details:", error.response || error);
+    // Có thể xử lý thêm ở đây
+  }
 };
 
 // export const getAllUser = async (access_token) => {
@@ -49,9 +72,9 @@ export const getAllUser = async () => {
     console.error("No access token found");
     return;
   }
-  console.log("Sending request with token:", access_token);
+
   try {
-    const res = await axios.get(
+    const res = await axiosJWT.get(
       `${process.env.REACT_APP_API_TEST}/user/GetAll/`,
       {
         headers: {
@@ -59,7 +82,7 @@ export const getAllUser = async () => {
         },
       }
     );
-    console.log("Response:", res.data);
+
     return res.data;
   } catch (error) {
     console.error("Error fetching users:", error.response || error);
@@ -150,4 +173,41 @@ export const deleteUser = async (id, access_token) => {
     }
   );
   return res.data;
+};
+
+// export const deleteManyUser = async (data, access_token) => {
+//   const res = await axiosJWT.post(
+//     `${process.env.REACT_APP_API_TEST}/user/Delete-Many`,
+//     data,
+//     {
+//       headers: {
+//         token: `Bearer ${access_token}`,
+//       },
+//     }
+//   );
+//   return res.data;
+// };
+
+export const deleteManyUser = async (data) => {
+  const access_token = JSON.parse(localStorage.getItem("access_token"));
+  if (!access_token) {
+    console.error("No access token found");
+    return;
+  }
+
+  try {
+    const res = await axiosJWT.post(
+      `${process.env.REACT_APP_API_TEST}/user/Delete-Many`,
+      data,
+      {
+        headers: {
+          token: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching user details:", error.response || error);
+    // Có thể xử lý thêm ở đây
+  }
 };

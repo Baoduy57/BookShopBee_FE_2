@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// initialState: Xác định trạng thái ban đầu của thông tin người dùng.
 const initialState = {
   id: "",
   name: "",
@@ -15,6 +16,7 @@ export const userSlide = createSlice({
   name: "user",
   initialState,
   reducers: {
+    // updateUser: Cập nhật thông tin người dùng khi có dữ liệu mới
     updateUser: (state, action) => {
       const {
         _id = "",
@@ -35,6 +37,7 @@ export const userSlide = createSlice({
       state.access_token = access_token;
       state.isAdmin = isAdmin;
     },
+    // resetUser: Đặt lại thông tin người dùng về giá trị mặc định
     resetUser: (state) => {
       state.id = "";
       state.name = "";
