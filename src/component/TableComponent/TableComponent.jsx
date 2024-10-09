@@ -1,16 +1,23 @@
 import { Table } from "antd";
-import React, { useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import Loading from "../LoadingComponent/Loading";
+import { Excel } from "antd-table-saveas-excel";
 
 const TableComponent = (props) => {
   const [rowSelectedKeys, setRowSelectedKeys] = useState([]);
+
   const {
     selectionType = "checkbox",
-    data = [],
+    data: dataSource = [],
     isPending = false,
     columns = [],
     handleDeleteMany,
   } = props;
+
+  const newColumnExport = useMemo(() => {
+    const arr = columns?.filter((col) => col.dataIndex !== "action");
+    return arr;
+  }, [columns]);
 
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -24,6 +31,17 @@ const TableComponent = (props) => {
   };
   const handleDeleteAll = () => {
     handleDeleteMany(rowSelectedKeys);
+  };
+
+  const exportExcel = () => {
+    const excel = new Excel();
+    excel
+      .addSheet("test")
+      .addColumns(newColumnExport)
+      .addDataSource(dataSource, {
+        str2Percent: true,
+      })
+      .saveAs("Excel.xlsx");
   };
 
   return (
@@ -43,10 +61,11 @@ const TableComponent = (props) => {
           Delete what you selected
         </div>
       )}
+      <button onClick={exportExcel}>Export to Excel</button>
       <Table
         rowSelection={{ type: selectionType, ...rowSelection }}
         columns={columns}
-        dataSource={data}
+        dataSource={dataSource}
         {...props}
       />
     </Loading>
