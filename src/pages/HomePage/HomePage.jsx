@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TypeProduct from "../../component/TypeProduct/TypeProduct";
 import { WrapperButtonMore, WrapperProduct, WrapperTypeProduct } from "./style";
 import SliderComponent from "../../component/SliderComponent/SliderComponent";
@@ -6,11 +6,22 @@ import slider1 from "../../assets/images/slider1.jpg";
 import slider2 from "../../assets/images/slider2.jpg";
 import slider3 from "../../assets/images/slider3.jpg";
 import CardComponent from "../../component/CardComponent/CardComponent";
-import NavbarComponent from "../../component/NavbarComponent/NavbarComponent";
 import { useQuery } from "@tanstack/react-query";
 import * as ProductService from "../../services/ProductService";
+import { useSelector } from "react-redux";
+import Loading from "../../component/LoadingComponent/Loading";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const HomePage = () => {
+  const searchProduct = useSelector((state) => state?.product?.search);
+
+  const searchDebounce = useDebounce(searchProduct, 1000);
+
+  const refSearch = useRef();
+
+  const [loading, setLoading] = useState(false);
+
+  const [stateProducts, setStateProducts] = useState([]);
   const arr = [
     "Sách Tình cảm",
     "Sách Bí ẩn",
@@ -18,20 +29,40 @@ const HomePage = () => {
     "Sách truyền cảm hứng",
   ];
 
-  const fetchProductAll = async () => {
-    const res = await ProductService.getAllProduct();
-
-    return res;
+  const fetchProductAll = async (search) => {
+    const res = await ProductService.getAllProduct(search);
+    if (search?.length > 0 || refSearch.current) {
+      setStateProducts(res?.data);
+      return [];
+    } else {
+      return res;
+    }
   };
+
+  useEffect(() => {
+    if (refSearch.current) {
+      setLoading(true);
+      fetchProductAll(searchDebounce);
+    }
+    setLoading(false);
+    refSearch.current = true;
+  }, [searchDebounce]);
+
   const { isLoading, data: products } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProductAll,
     retry: 3,
     retryDelay: 2000,
   });
-  console.log("data: ", products);
+
+  useEffect(() => {
+    if (products?.data?.length > 0) {
+      setStateProducts(products?.data);
+    }
+  }, [products]);
+
   return (
-    <>
+    <Loading isPending={isLoading || loading}>
       <div style={{ width: "1270px", margin: "0 auto" }}>
         <WrapperTypeProduct>
           {arr.map((item) => {
@@ -57,7 +88,7 @@ const HomePage = () => {
           ></SliderComponent>
 
           <WrapperProduct>
-            {products?.data?.map((product) => {
+            {stateProducts?.map((product) => {
               return (
                 <CardComponent
                   key={product._id}
@@ -74,7 +105,6 @@ const HomePage = () => {
               );
             })}
           </WrapperProduct>
-          {/* <NavbarComponent></NavbarComponent> */}
 
           <div
             style={{
@@ -100,7 +130,7 @@ const HomePage = () => {
         </div>
       </div>
       HomePage
-    </>
+    </Loading>
   );
 };
 
