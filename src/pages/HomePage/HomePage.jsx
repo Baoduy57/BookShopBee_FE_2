@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import TypeProduct from "../../component/TypeProduct/TypeProduct";
 import { WrapperButtonMore, WrapperProduct, WrapperTypeProduct } from "./style";
 import SliderComponent from "../../component/SliderComponent/SliderComponent";
@@ -17,11 +17,10 @@ const HomePage = () => {
 
   const searchDebounce = useDebounce(searchProduct, 1000);
 
-  const refSearch = useRef();
-
   const [loading, setLoading] = useState(false);
 
-  const [stateProducts, setStateProducts] = useState([]);
+  const [limit, setLimit] = useState(6);
+
   const arr = [
     "Sách Tình cảm",
     "Sách Bí ẩn",
@@ -29,37 +28,24 @@ const HomePage = () => {
     "Sách truyền cảm hứng",
   ];
 
-  const fetchProductAll = async (search) => {
-    const res = await ProductService.getAllProduct(search);
-    if (search?.length > 0 || refSearch.current) {
-      setStateProducts(res?.data);
-      return [];
-    } else {
-      return res;
-    }
+  const fetchProductAll = async (context) => {
+    const limit = context?.queryKey && context?.queryKey[1];
+    const search = context?.queryKey && context?.queryKey[2];
+    const res = await ProductService.getAllProduct(search, limit);
+    return res;
   };
 
-  useEffect(() => {
-    if (refSearch.current) {
-      setLoading(true);
-      fetchProductAll(searchDebounce);
-    }
-    setLoading(false);
-    refSearch.current = true;
-  }, [searchDebounce]);
-
-  const { isLoading, data: products } = useQuery({
-    queryKey: ["products"],
+  const {
+    isLoading,
+    data: products,
+    isPreviousData,
+  } = useQuery({
+    queryKey: ["products", limit, searchDebounce],
     queryFn: fetchProductAll,
     retry: 3,
     retryDelay: 2000,
+    keepPreviousData: true,
   });
-
-  useEffect(() => {
-    if (products?.data?.length > 0) {
-      setStateProducts(products?.data);
-    }
-  }, [products]);
 
   return (
     <Loading isPending={isLoading || loading}>
@@ -88,7 +74,7 @@ const HomePage = () => {
           ></SliderComponent>
 
           <WrapperProduct>
-            {stateProducts?.map((product) => {
+            {products?.data?.map((product) => {
               return (
                 <CardComponent
                   key={product._id}
@@ -115,16 +101,30 @@ const HomePage = () => {
             }}
           >
             <WrapperButtonMore
-              textButton="Xem thêm"
+              textButton={isPreviousData ? "Load more" : "Xem thêm"}
               type="outline"
               styleButton={{
                 border: "1px solid rgb(11,116,229)",
-                color: "rgb(11,116,229)",
+                color: `${
+                  products?.total === products?.data?.length
+                    ? "#ccc"
+                    : "rgb(11,116,229)"
+                }`,
                 width: "240px",
                 height: "38px",
                 borderRadius: "5px",
               }}
-              styleTextButton={{ fontWeight: "500" }}
+              disabled={
+                products?.total === products?.data?.length ||
+                products?.totalPage === 1
+              }
+              styleTextButton={{
+                fontWeight: "500",
+                color: products?.total === products?.data?.length && "#fff",
+              }}
+              onClick={() => {
+                setLimit((prev) => prev + 6);
+              }}
             ></WrapperButtonMore>
           </div>
         </div>
