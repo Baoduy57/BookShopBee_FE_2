@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { WrapperHeader } from "./style";
-import { Button, Form, Space } from "antd";
+import { Button, Form, Select, Space } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -10,7 +10,7 @@ import {
 import TableComponent from "../TableComponent/TableComponent";
 import InputComponent from "../InputComponent/InputComponent";
 import { WrapperUploadFile } from "../../component/AdminProduct/style";
-import { getBase64 } from "../../utils";
+import { getBase64, renderOption } from "../../utils";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import * as ProductService from "../../services/ProductService";
 import Loading from "../LoadingComponent/Loading";
@@ -33,8 +33,8 @@ const AdminProduct = () => {
 
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
 
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
+  const [typeSelect, setTypeSelect] = useState("");
+
   const searchInput = useRef(null);
 
   const user = useSelector((state) => state?.user);
@@ -46,6 +46,7 @@ const AdminProduct = () => {
     countInStock: "",
     rating: "",
     image: "",
+    newType: "",
   });
 
   const [stateProductDetails, setStateProductDetails] = useState({
@@ -146,6 +147,11 @@ const AdminProduct = () => {
     );
   };
 
+  const fetchAllTypeProduct = async () => {
+    const res = await ProductService.getAllTypeProduct();
+    return res;
+  };
+
   const { data, isPending, isSuccess, isError } = mutation;
   const {
     data: dataUpdated,
@@ -169,6 +175,11 @@ const AdminProduct = () => {
   const queryProduct = useQuery({
     queryKey: ["products"],
     queryFn: getAllProducts,
+  });
+
+  const typeProduct = useQuery({
+    queryKey: ["type-product"],
+    queryFn: fetchAllTypeProduct,
   });
 
   const { isLoading: isLoadingProducts, data: products } = queryProduct;
@@ -452,7 +463,19 @@ const AdminProduct = () => {
   };
 
   const onFinish = () => {
-    mutation.mutate(stateProduct, {
+    const params = {
+      name: stateProduct.name,
+      price: stateProduct.price,
+      description: stateProduct.description,
+      type:
+        stateProduct.type === "add_type"
+          ? stateProduct.newType
+          : stateProduct.type,
+      countInStock: stateProduct.countInStock,
+      rating: stateProduct.rating,
+      image: stateProduct.image,
+    };
+    mutation.mutate(params, {
       onSettled: () => {
         queryProduct.refetch();
       },
@@ -550,6 +573,13 @@ const AdminProduct = () => {
     );
   };
 
+  const handleChangeSelect = (value) => {
+    setStateProduct({
+      ...stateProduct,
+      type: value,
+    });
+  };
+
   return (
     <div>
       <WrapperHeader>Product Management</WrapperHeader>
@@ -618,12 +648,29 @@ const AdminProduct = () => {
               name="type"
               rules={[{ required: true, message: "Please input your type!" }]}
             >
-              <InputComponent
-                value={stateProduct.type}
-                onChange={handleOnchange}
+              <Select
                 name="type"
-              />
+                value={stateProduct.type}
+                onChange={handleChangeSelect}
+                options={renderOption(typeProduct?.data?.data)}
+              ></Select>
             </Form.Item>
+
+            {stateProduct.type === "add_type" && (
+              <Form.Item
+                label="New type"
+                name="newType"
+                rules={[
+                  { required: true, message: "Please input your new type!" },
+                ]}
+              >
+                <InputComponent
+                  value={stateProduct.type}
+                  onChange={handleOnchange}
+                  name="newType"
+                />
+              </Form.Item>
+            )}
 
             <Form.Item
               label="Count inStock"
