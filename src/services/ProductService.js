@@ -1,15 +1,15 @@
 import axios from "axios";
 export const axiosJWT = axios.create();
 
-export const getAllProduct = async (search) => {
+export const getAllProduct = async (search, limit) => {
   let res = {};
   if (search?.length > 0) {
     res = await axios.get(
-      `${process.env.REACT_APP_API_TEST}/product/GetAll-Product?filter=name&filter=${search}`
+      `${process.env.REACT_APP_API_TEST}/product/GetAll-Product?filter=name&filter=${search}&limit=${limit}`
     );
   } else {
     res = await axios.get(
-      `${process.env.REACT_APP_API_TEST}/product/GetAll-Product`
+      `${process.env.REACT_APP_API_TEST}/product/GetAll-Product?limit=${limit}`
     );
   }
 
@@ -17,11 +17,22 @@ export const getAllProduct = async (search) => {
 };
 
 export const createProduct = async (data) => {
-  const res = await axios.post(
-    `${process.env.REACT_APP_API_TEST}/product/Create-Product`,
-    data
-  );
-  return res.data;
+  const access_token = JSON.parse(localStorage.getItem("access_token"));
+  if (!access_token) {
+    console.error("No access token found");
+    return;
+  }
+
+  try {
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_TEST}/product/Create-Product`,
+      data
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching user details:", error.response || error);
+    // Có thể xử lý thêm ở đây
+  }
 };
 
 export const getDetailsProduct = async (id) => {
