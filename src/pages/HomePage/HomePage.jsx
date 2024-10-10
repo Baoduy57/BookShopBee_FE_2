@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TypeProduct from "../../component/TypeProduct/TypeProduct";
 import { WrapperButtonMore, WrapperProduct, WrapperTypeProduct } from "./style";
 import SliderComponent from "../../component/SliderComponent/SliderComponent";
@@ -21,18 +21,20 @@ const HomePage = () => {
 
   const [limit, setLimit] = useState(6);
 
-  const arr = [
-    "Sách Tình cảm",
-    "Sách Bí ẩn",
-    "Sách Kinh dị, giật gân",
-    "Sách truyền cảm hứng",
-  ];
+  const [typeProducts, setTypeProducts] = useState([]);
 
   const fetchProductAll = async (context) => {
     const limit = context?.queryKey && context?.queryKey[1];
     const search = context?.queryKey && context?.queryKey[2];
     const res = await ProductService.getAllProduct(search, limit);
     return res;
+  };
+
+  const fetchAllTypeProduct = async () => {
+    const res = await ProductService.getAllTypeProduct();
+    if (res?.status === "OK") {
+      setTypeProducts(res?.data);
+    }
   };
 
   const {
@@ -47,11 +49,15 @@ const HomePage = () => {
     keepPreviousData: true,
   });
 
+  useEffect(() => {
+    fetchAllTypeProduct();
+  }, []);
+
   return (
     <Loading isPending={isLoading || loading}>
       <div style={{ width: "1270px", margin: "0 auto" }}>
         <WrapperTypeProduct>
-          {arr.map((item) => {
+          {typeProducts.map((item) => {
             return <TypeProduct name={item} key={item}></TypeProduct>;
           })}
         </WrapperTypeProduct>
