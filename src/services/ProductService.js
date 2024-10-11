@@ -16,6 +16,15 @@ export const getAllProduct = async (search, limit) => {
   return res.data;
 };
 
+export const getProductType = async (type) => {
+  if (type) {
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_TEST}/product/GetAll-Product?filter=type&filter=${type}`
+    );
+    return res.data;
+  }
+};
+
 export const createProduct = async (data) => {
   const access_token = JSON.parse(localStorage.getItem("access_token"));
   if (!access_token) {

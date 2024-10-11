@@ -1,4 +1,4 @@
-import { Badge, Button, Col, message, Popover } from "antd";
+import { Badge, Col, message, Popover } from "antd";
 import React, { useEffect } from "react";
 import {
   WrapperAccountHeader,
@@ -7,7 +7,7 @@ import {
   WrapperTextHeader,
   WrapperTextSmallHeader,
 } from "./style";
-import Search from "antd/es/transfer/search";
+
 import {
   UserOutlined,
   CaretDownOutlined,
@@ -160,10 +160,10 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
                   style={{ cursor: "pointer" }}
                 >
                   <WrapperTextSmallHeader>
-                    Đăng nhập/Đăng ký
+                    Login/Register
                   </WrapperTextSmallHeader>
                   <div>
-                    <WrapperTextSmallHeader>Tài khoản</WrapperTextSmallHeader>
+                    <WrapperTextSmallHeader>Account</WrapperTextSmallHeader>
                     <CaretDownOutlined />
                   </div>
                 </div>
@@ -171,13 +171,16 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
             </WrapperAccountHeader>
           </Loading>
           {!isHiddenCart && (
-            <div>
+            <div
+              onClick={() => navigate("/OrderPage")}
+              style={{ cursor: "pointer" }}
+            >
               <Badge count={4} size="small">
                 <ShoppingCartOutlined
                   style={{ fontSize: "30px", color: "white" }}
                 />
               </Badge>
-              <WrapperTextSmallHeader>Giỏ hàng </WrapperTextSmallHeader>
+              <WrapperTextSmallHeader>Shopping Cart </WrapperTextSmallHeader>
             </div>
           )}
         </Col>
