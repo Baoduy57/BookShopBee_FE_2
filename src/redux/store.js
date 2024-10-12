@@ -1,15 +1,43 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import productReducer from "./slides/productSlide";
 import userReducer from "./slides/userSlide";
 import orderReducer from "./slides/orderSlide";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
+
+const persistConfig = {
+  key: "root",
+  version: 1,
+  storage,
+  blacklist: ["product", "user"],
+};
+
+const rootReducer = combineReducers({
+  product: productReducer,
+  user: userReducer,
+  order: orderReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Store: Store này lưu trữ toàn bộ state của ứng dụng và giúp quản lý sự thay đổi của state thông qua các action và reducer.
 export const store = configureStore({
-  reducer: {
-    // productReducer: Quản lý logic liên quan đến thông tin san pham.
-    product: productReducer,
-    // userReducer: Quản lý logic liên quan đến thông tin người dùng.
-    user: userReducer,
-    order: orderReducer,
-  },
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
+
+export let persistor = persistStore(store);
