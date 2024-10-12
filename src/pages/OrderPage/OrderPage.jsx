@@ -13,7 +13,10 @@ import {
 import { Checkbox } from "antd";
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import ButtonComponent from "../../component/ButtonComponent/ButtonComponent";
-const OrderPage = ({ count = 1 }) => {
+import { WrapperInputNumber } from "../../component/ProductDetailsComponent/style";
+import { useSelector } from "react-redux";
+const OrderPage = () => {
+  const order = useSelector((state) => state.order);
   const onChange = (e) => {};
   const handleChangeCount = () => {};
 
@@ -28,7 +31,7 @@ const OrderPage = ({ count = 1 }) => {
             <WrapperStyleHeader>
               <span style={{ display: "inline-block", width: "390px" }}>
                 <Checkbox onChange={handleOnchangeCheckAll}></Checkbox>
-                <span>All ({count} product)</span>
+                <span>All ({order?.orderItems?.length} product)</span>
               </span>
               <div
                 style={{
@@ -46,82 +49,96 @@ const OrderPage = ({ count = 1 }) => {
             </WrapperStyleHeader>
 
             <WrapperListOrder>
-              <WrapperItemOrder>
-                <div
-                  style={{
-                    width: "390px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
-                  }}
-                >
-                  <Checkbox onChange={onChange}></Checkbox>
-                  <img
-                    src="../../assets/images/detail1.webp"
-                    style={{
-                      width: "77px",
-                      height: "79px",
-                      objectFit: "cover",
-                    }}
-                  ></img>
-                  <div>Name Product</div>
-                </div>
-                <div
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span>
-                    <span style={{ fontSize: "13px", color: "#242424" }}>
-                      211
-                    </span>
-                    <WrapperPriceDiscount>230</WrapperPriceDiscount>
-                  </span>
-
-                  <WrapperCountOrder>
-                    <button
+              {order?.orderItems?.map((order) => {
+                return (
+                  <WrapperItemOrder>
+                    <div
                       style={{
-                        border: "none",
-                        background: "transparent",
-                        cursor: "pointer",
+                        width: "390px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4,
                       }}
-                      onClick={() => handleChangeCount("decrease")}
                     >
-                      <MinusOutlined
-                        style={{ color: "#000", fontSize: "10px" }}
-                      ></MinusOutlined>
-                    </button>
-                    <button
+                      <Checkbox onChange={onChange}></Checkbox>
+                      <img
+                        src="../../assets/images/detail1.webp"
+                        style={{
+                          width: "77px",
+                          height: "79px",
+                          objectFit: "cover",
+                        }}
+                      ></img>
+                      <div>{order?.name}</div>
+                    </div>
+                    <div
                       style={{
-                        border: "none",
-                        background: "transparent",
-                        cursor: "pointer",
+                        flex: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
                       }}
-                      onClick={() => handleChangeCount("increase")}
                     >
-                      <PlusOutlined
-                        style={{ color: "#000", fontSize: "10px" }}
-                      ></PlusOutlined>
-                    </button>
-                  </WrapperCountOrder>
+                      <span>
+                        <span style={{ fontSize: "13px", color: "#242424" }}>
+                          {order?.price}
+                        </span>
+                        <WrapperPriceDiscount>
+                          {order?.amount}
+                        </WrapperPriceDiscount>
+                      </span>
 
-                  <span
-                    style={{
-                      color: "rgb(255,66,78)",
-                      fontSize: "13px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    1212
-                  </span>
-                  <DeleteOutlined
-                    style={{ cursor: "pointer" }}
-                  ></DeleteOutlined>
-                </div>
-              </WrapperItemOrder>
+                      <WrapperCountOrder>
+                        <button
+                          style={{
+                            border: "none",
+                            background: "transparent",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleChangeCount("decrease")}
+                        >
+                          <MinusOutlined
+                            style={{ color: "#000", fontSize: "10px" }}
+                          ></MinusOutlined>
+                        </button>
+
+                        <WrapperInputNumber
+                          onChange={onChange}
+                          defaultValue={order?.amount}
+                          value={order?.amount}
+                          size="small"
+                        ></WrapperInputNumber>
+
+                        <button
+                          style={{
+                            border: "none",
+                            background: "transparent",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleChangeCount("increase")}
+                        >
+                          <PlusOutlined
+                            style={{ color: "#000", fontSize: "10px" }}
+                          ></PlusOutlined>
+                        </button>
+                      </WrapperCountOrder>
+
+                      <span
+                        style={{
+                          color: "rgb(255,66,78)",
+                          fontSize: "13px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {order?.price * order?.amount}
+                      </span>
+                      <DeleteOutlined
+                        style={{ cursor: "pointer" }}
+                      ></DeleteOutlined>
+                    </div>
+                  </WrapperItemOrder>
+                );
+              })}
             </WrapperListOrder>
           </WrapperLeft>
 
@@ -209,9 +226,17 @@ const OrderPage = ({ count = 1 }) => {
                 <span>Total amount</span>
                 <span style={{ display: "flex", flexDirection: "column" }}>
                   <span
-                    style={{ color: "rgb(254,56,52)", fontSize: "24px" }}
-                  ></span>
-                  <span style={{ color: "#000", fontSize: "11px" }}></span>
+                    style={{
+                      color: "rgb(254,56,52)",
+                      fontSize: "24px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    0234
+                  </span>
+                  <span style={{ color: "#000", fontSize: "11px" }}>
+                    (VAT included if applicable)
+                  </span>
                 </span>
               </WrapperTotal>
             </div>

@@ -33,13 +33,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   const [userAvatar, setUserAvatar] = useState("");
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-
-  // const handleLogout = async () => {
-  //   setLoading(true);
-  //   await UserService.logoutUser();
-  //   dispatch(resetUser());
-  //   setLoading(false);
-  // };
+  const order = useSelector((state) => state.order);
 
   const handleLogout = async () => {
     setLoading(true); // Bắt đầu loading khi thực hiện đăng xuất
@@ -175,7 +169,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
               onClick={() => navigate("/OrderPage")}
               style={{ cursor: "pointer" }}
             >
-              <Badge count={4} size="small">
+              <Badge count={order?.orderItems?.length} size="small">
                 <ShoppingCartOutlined
                   style={{ fontSize: "30px", color: "white" }}
                 />

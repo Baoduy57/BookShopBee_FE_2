@@ -17,9 +17,14 @@ import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import * as ProductService from "../../services/ProductService";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../LoadingComponent/Loading";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { addOrderProduct } from "../../redux/slides/orderSlide";
 
 const ProductDetailsComponent = ({ idProduct }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
   const [numProduct, setNumProduct] = useState(1);
   const user = useSelector((state) => state.user);
   const onChange = (value) => {
@@ -47,6 +52,24 @@ const ProductDetailsComponent = ({ idProduct }) => {
     queryFn: fetchGetDetailsProduct,
     enabled: !!idProduct,
   });
+
+  const handleAddOrderProduct = () => {
+    if (!user?.id) {
+      navigate("/Sign-In", { state: location?.pathname });
+    } else {
+      dispatch(
+        addOrderProduct({
+          orderItem: {
+            name: productDetails?.name,
+            amount: numProduct,
+            image: productDetails?.image,
+            price: productDetails?.price,
+            product: productDetails?._id,
+          },
+        })
+      );
+    }
+  };
 
   return (
     <Loading isPending={isLoading}>
@@ -197,7 +220,8 @@ const ProductDetailsComponent = ({ idProduct }) => {
                 width: "220px",
                 borderRadius: "5px",
               }}
-              textButton={"Chọn mua"}
+              onClick={handleAddOrderProduct}
+              textButton={"Select to buy"}
               styleTextButton={{ color: "#fff" }}
             ></ButtonComponent>
 
