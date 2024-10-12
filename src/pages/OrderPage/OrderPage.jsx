@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   WrapperCountOrder,
   WrapperInfo,
@@ -21,6 +21,7 @@ import {
   removeAllOrderProduct,
   removeOrderProduct,
 } from "../../redux/slides/orderSlide";
+import { convertPrice } from "../../utils";
 const OrderPage = () => {
   const order = useSelector((state) => state.order);
   const [listChecked, setListChecked] = useState([]);
@@ -60,6 +61,37 @@ const OrderPage = () => {
       setListChecked([]);
     }
   };
+
+  const priceMemo = useMemo(() => {
+    const result = order?.orderItems?.reduce((total, cur) => {
+      return total + cur.price * cur.amount;
+    }, 0);
+    return result;
+  }, [order]);
+
+  const priceDiscountMemo = useMemo(() => {
+    const result = order?.orderItems?.reduce((total, cur) => {
+      return total + cur.discount * cur.amount;
+    }, 0);
+    if (Number(result)) {
+      return result;
+    }
+    return 0;
+  }, [order]);
+
+  const diliveryPriceMemo = useMemo(() => {
+    if (priceMemo >= 200000) {
+      return 20000;
+    } else {
+      return 50000;
+    }
+  }, [priceMemo]);
+
+  const totalPriceMemo = useMemo(() => {
+    return (
+      Number(priceMemo) - Number(priceDiscountMemo) + Number(diliveryPriceMemo)
+    );
+  }, [priceMemo, priceDiscountMemo, diliveryPriceMemo]);
 
   const handleRemoveAllOrder = () => {
     if (listChecked?.length > 1) {
@@ -145,7 +177,7 @@ const OrderPage = () => {
                     >
                       <span>
                         <span style={{ fontSize: "13px", color: "#242424" }}>
-                          {order?.price}
+                          {convertPrice(order?.price)}
                         </span>
                       </span>
 
@@ -194,7 +226,7 @@ const OrderPage = () => {
                           fontWeight: 500,
                         }}
                       >
-                        {order?.price * order?.amount}
+                        {convertPrice(order?.price * order?.amount)}
                       </span>
                       <DeleteOutlined
                         style={{ cursor: "pointer" }}
@@ -225,7 +257,7 @@ const OrderPage = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    0
+                    {convertPrice(priceMemo)}
                   </span>
                 </div>
 
@@ -244,11 +276,11 @@ const OrderPage = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    0
+                    {`${priceDiscountMemo} %`}
                   </span>
                 </div>
 
-                <div
+                {/* <div
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -265,7 +297,7 @@ const OrderPage = () => {
                   >
                     0
                   </span>
-                </div>
+                </div> */}
 
                 <div
                   style={{
@@ -282,7 +314,7 @@ const OrderPage = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    0
+                    {convertPrice(diliveryPriceMemo)}
                   </span>
                 </div>
               </WrapperInfo>
@@ -297,7 +329,7 @@ const OrderPage = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    0234
+                    {convertPrice(totalPriceMemo)}
                   </span>
                   <span style={{ color: "#000", fontSize: "11px" }}>
                     (VAT included if applicable)
