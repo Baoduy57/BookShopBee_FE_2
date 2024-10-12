@@ -45,3 +45,12 @@ export const renderOption = (arr) => {
   });
   return results;
 };
+
+export const convertPrice = (price) => {
+  try {
+    const result = price?.toLocaleString().replaceAll(",", ".");
+    return `${result} VND`;
+  } catch (error) {
+    return null;
+  }
+};
