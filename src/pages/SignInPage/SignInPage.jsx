@@ -10,7 +10,7 @@ import imageLogo from "../../assets/images/theme-login.jpg";
 import { Image } from "antd";
 import { EyeFilled, EyeInvisibleFilled } from "@ant-design/icons";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import * as UserService from "../../services/UserService";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import Loading from "../../component/LoadingComponent/Loading";
@@ -25,6 +25,7 @@ const SignInPage = () => {
   // email, password: Lưu trữ giá trị email và mật khẩu người dùng nhập vào.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const location = useLocation();
 
   const dispatch = useDispatch();
 
@@ -60,11 +61,15 @@ const SignInPage = () => {
   // Nếu đăng nhập thành công (isSuccess), token sẽ được lưu vào localStorage, và thông tin người dùng được giải mã bằng jwtDecode. Sau đó, người dùng sẽ được chuyển hướng về trang chính.
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
+      if (location?.state) {
+        navigate(location?.state);
+      } else {
+        navigate("/");
+      }
       // Chỉ điều hướng nếu đăng nhập thành công
       localStorage.setItem("access_token", JSON.stringify(data?.access_token)); // Lưu access token vào localStorage
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token); // Giải mã token bằng jwtDecode
-
         if (decoded?.id) {
           handleGetDetailsUser(decoded?.id, data?.access_token);
         }
