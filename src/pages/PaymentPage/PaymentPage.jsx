@@ -1,41 +1,31 @@
+/* eslint-disable no-unused-expressions */
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  WrapperCountOrder,
+  Lable,
   WrapperInfo,
-  WrapperItemOrder,
   WrapperLeft,
-  WrapperListOrder,
-  WrapperPriceDiscount,
+  WrapperRadio,
   WrapperRight,
-  WrapperStyleHeader,
   WrapperTotal,
 } from "./style";
-import { Button, Checkbox, Form } from "antd";
-import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { Form, Radio } from "antd";
 import ButtonComponent from "../../component/ButtonComponent/ButtonComponent";
-import { WrapperInputNumber } from "../../component/ProductDetailsComponent/style";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  decreaseAmount,
-  increaseAmount,
-  removeAllOrderProduct,
-  removeOrderProduct,
-  selectedOrder,
-} from "../../redux/slides/orderSlide";
 import { convertPrice } from "../../utils";
 import ModalComponent from "../../component/ModalComponent/ModalComponent";
 import InputComponent from "../../component/InputComponent/InputComponent";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import * as UserService from "../../services/UserService";
+import * as OrderService from "../../services/OrderService";
 import Loading from "../../component/LoadingComponent/Loading";
 import * as Message from "../../component/Message/Message";
 import { updateUser } from "../../redux/slides/userSlide";
-import { useNavigate } from "react-router-dom";
 
-const OrderPage = () => {
+const PaymentPage = () => {
   const order = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
-  const [listChecked, setListChecked] = useState([]);
+  const [delivery, setDelivery] = useState("fast");
+  const [payment, setPayment] = useState("later_money");
   const [isModalOpenUpdateInfo, setIsModalOpenUpdateInfo] = useState(false);
   const [stateUserDetails, setstateUserDetails] = useState({
     name: "",
@@ -44,49 +34,9 @@ const OrderPage = () => {
     city: "",
   });
 
-  const navigate = useNavigate();
   const [form] = Form.useForm();
 
   const dispatch = useDispatch();
-
-  const onChange = (e) => {
-    if (listChecked.includes(e.target.value)) {
-      const newListChecked = listChecked.filter(
-        (item) => item !== e.target.value
-      );
-      setListChecked(newListChecked);
-    } else {
-      setListChecked([...listChecked, e.target.value]);
-    }
-  };
-
-  const handleChangeCount = (type, idProduct) => {
-    if (type === "increase") {
-      dispatch(increaseAmount({ idProduct }));
-    } else {
-      dispatch(decreaseAmount({ idProduct }));
-    }
-  };
-
-  const handleOrderDelete = (idProduct) => {
-    dispatch(removeOrderProduct({ idProduct }));
-  };
-
-  const handleOnchangeCheckAll = (e) => {
-    if (e.target.checked) {
-      const newListChecked = [];
-      order?.orderItems?.forEach((item) => {
-        newListChecked.push(item?.product);
-      });
-      setListChecked(newListChecked);
-    } else {
-      setListChecked([]);
-    }
-  };
-
-  useEffect(() => {
-    dispatch(selectedOrder({ listChecked }));
-  }, [listChecked]);
 
   useEffect(() => {
     form.setFieldsValue(stateUserDetails);
@@ -140,19 +90,30 @@ const OrderPage = () => {
     );
   }, [priceMemo, priceDiscountMemo, diliveryPriceMemo]);
 
-  const handleRemoveAllOrder = () => {
-    if (listChecked?.length > 1) {
-      dispatch(removeAllOrderProduct({ listChecked }));
-    }
-  };
-
-  const handleAddCard = () => {
-    if (!order?.orderItemsSelected?.length) {
-      Message.error("Please select product to order");
-    } else if (!user?.phone || !user?.address || !user?.name || !user?.city) {
-      setIsModalOpenUpdateInfo(true);
-    } else {
-      navigate("/PaymentPage");
+  const handleAddOrder = () => {
+    if (
+      user?.access_token &&
+      order?.orderItemsSelected &&
+      user?.name &&
+      user?.address &&
+      user?.phone &&
+      user?.city &&
+      priceMemo &&
+      user?.id
+    ) {
+      mutationAddOrder.mutate({
+        token: user?.access_token,
+        orderItems: order?.orderItemsSelected,
+        fullName: user?.name,
+        address: user?.address,
+        phone: user?.phone,
+        city: user?.city,
+        paymentMethod: payment,
+        itemsPrice: priceMemo,
+        shippingPrice: diliveryPriceMemo,
+        totalPrice: totalPriceMemo,
+        user: user?.id,
+      });
     }
   };
 
@@ -162,7 +123,27 @@ const OrderPage = () => {
     return res;
   });
 
+  const mutationAddOrder = useMutationHooks((data) => {
+    const { token, ...rests } = data;
+    const res = OrderService.createOrder(rests, token);
+    return res;
+  });
+
   const { isLoading, data } = mutationUpdate;
+  const {
+    isLoading: isLoadingAddOrder,
+    data: dataAdd,
+    isSuccess,
+    isError,
+  } = mutationAddOrder;
+
+  useEffect(() => {
+    if (isSuccess && dataAdd?.status === "OK") {
+      Message.success("Order successfully");
+    } else if (isError) {
+      Message.error();
+    }
+  }, [isSuccess, isError, dataAdd]);
 
   const handleCancelUpdate = () => {
     setstateUserDetails({
@@ -201,144 +182,50 @@ const OrderPage = () => {
     });
   };
 
+  const handleDilivery = (e) => {
+    setDelivery(e.target.value);
+  };
+  const handlePayment = (e) => {
+    setPayment(e.target.value);
+  };
+
   return (
     <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
+      {/* <Loading isPending={isLoadingAddOrder}> */}
       <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
-        <h3>Shopping cart</h3>
+        <h3>Select payment method</h3>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <WrapperLeft>
-            <WrapperStyleHeader>
-              <span style={{ display: "inline-block", width: "390px" }}>
-                <Checkbox
-                  onChange={handleOnchangeCheckAll}
-                  checked={listChecked?.length === order?.orderItems?.length}
-                ></Checkbox>
-                <span>All ({order?.orderItems?.length} product)</span>
-              </span>
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Unit price</span>
-                <span>Quantity</span>
-                <span>Total amount</span>
-                <DeleteOutlined
-                  style={{ cursor: "pointer" }}
-                  onClick={handleRemoveAllOrder}
-                ></DeleteOutlined>
+            <WrapperInfo>
+              <div>
+                <Lable>chon phuong thuc giao hang</Lable>
+                <WrapperRadio onChange={handleDilivery} value={delivery}>
+                  <Radio value="fast">
+                    <span style={{ color: "#ea8500", fontWeight: "bold" }}>
+                      FAST
+                    </span>
+                    Giao hang tiet kiem
+                  </Radio>
+                  <Radio value="gojek">
+                    <span style={{ color: "#ea8500", fontWeight: "bold" }}>
+                      GO_JEK
+                    </span>
+                    Giao hang tiet kiem
+                  </Radio>
+                </WrapperRadio>
               </div>
-            </WrapperStyleHeader>
+            </WrapperInfo>
 
-            <WrapperListOrder>
-              {order?.orderItems?.map((order) => {
-                return (
-                  <WrapperItemOrder>
-                    <div
-                      style={{
-                        width: "390px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 4,
-                      }}
-                    >
-                      <Checkbox
-                        onChange={onChange}
-                        value={order?.product}
-                        checked={listChecked.includes(order?.product)}
-                      ></Checkbox>
-                      <img
-                        src={order?.image}
-                        style={{
-                          width: "77px",
-                          height: "79px",
-                          objectFit: "cover",
-                        }}
-                      ></img>
-                      <div
-                        style={{
-                          width: 260,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {order?.name}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <span>
-                        <span style={{ fontSize: "13px", color: "#242424" }}>
-                          {convertPrice(order?.price)}
-                        </span>
-                      </span>
-
-                      <WrapperCountOrder>
-                        <button
-                          style={{
-                            border: "none",
-                            background: "transparent",
-                            cursor: "pointer",
-                          }}
-                          onClick={() =>
-                            handleChangeCount("decrease", order?.product)
-                          }
-                        >
-                          <MinusOutlined
-                            style={{ color: "#000", fontSize: "10px" }}
-                          ></MinusOutlined>
-                        </button>
-
-                        <WrapperInputNumber
-                          defaultValue={order?.amount}
-                          value={order?.amount}
-                          size="small"
-                        ></WrapperInputNumber>
-
-                        <button
-                          style={{
-                            border: "none",
-                            background: "transparent",
-                            cursor: "pointer",
-                          }}
-                          onClick={() =>
-                            handleChangeCount("increase", order?.product)
-                          }
-                        >
-                          <PlusOutlined
-                            style={{ color: "#000", fontSize: "10px" }}
-                          ></PlusOutlined>
-                        </button>
-                      </WrapperCountOrder>
-
-                      <span
-                        style={{
-                          color: "rgb(255,66,78)",
-                          fontSize: "13px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {convertPrice(order?.price * order?.amount)}
-                      </span>
-                      <DeleteOutlined
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handleOrderDelete(order?.product)}
-                      ></DeleteOutlined>
-                    </div>
-                  </WrapperItemOrder>
-                );
-              })}
-            </WrapperListOrder>
+            <WrapperInfo>
+              <div>
+                <Lable>chon phuong thuc thanh toan</Lable>
+                <WrapperRadio onChange={handlePayment} value={payment}>
+                  <Radio value="later_money">
+                    thanh toan tien mat khi nhan hang
+                  </Radio>
+                </WrapperRadio>
+              </div>
+            </WrapperInfo>
           </WrapperLeft>
 
           <WrapperRight>
@@ -437,7 +324,7 @@ const OrderPage = () => {
             </div>
 
             <ButtonComponent
-              onClick={() => handleAddCard()}
+              onClick={() => handleAddOrder()}
               size={40}
               styleButton={{
                 background: "rgb(225,57,69)",
@@ -446,7 +333,7 @@ const OrderPage = () => {
                 borderRadius: "5px",
                 border: "none",
               }}
-              textButton={"Purchase"}
+              textButton={"Order product"}
               styleTextButton={{
                 color: "#fff",
                 fontSize: "15px",
@@ -479,7 +366,7 @@ const OrderPage = () => {
             rules={[{ required: true, message: "Please input your name!" }]}
           >
             <InputComponent
-              value={stateUserDetails.name}
+              value={stateUserDetails["name"]}
               onChange={handleOnchangeDetails}
               name="name"
             />
@@ -515,7 +402,7 @@ const OrderPage = () => {
             rules={[{ required: true, message: "Please input your city!" }]}
           >
             <InputComponent
-              value={stateUserDetails.city}
+              value={stateUserDetails["city"]}
               onChange={handleOnchangeDetails}
               name="city"
             />
@@ -523,8 +410,9 @@ const OrderPage = () => {
         </Form>
         {/* </Loading> */}
       </ModalComponent>
+      {/* </Loading> */}
     </div>
   );
 };
 
-export default OrderPage;
+export default PaymentPage;
