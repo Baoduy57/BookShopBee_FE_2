@@ -7,7 +7,7 @@ export const loginUser = async (data) => {
     `${process.env.REACT_APP_API_TEST}/user/Sign-In`,
     data
   );
-  console.log("Login response:", res);
+
   return res.data;
 };
 
@@ -54,41 +54,40 @@ export const getDetailsUser = async (id) => {
   }
 };
 
-// export const getAllUser = async (access_token) => {
-//   console.log("Access Token:", access_token);
-//   const res = await axiosJWT.get(
-//     `${process.env.REACT_APP_API_TEST}/user/GetAll/`,
-//     {
-//       headers: {
-//         token: `Bearer ${access_token}`,
-//       },
-//     }
-//   );
-//   return res.data;
-// };
-export const getAllUser = async () => {
-  const access_token = JSON.parse(localStorage.getItem("access_token"));
-  if (!access_token) {
-    console.error("No access token found");
-    return;
-  }
-
-  try {
-    const res = await axiosJWT.get(
-      `${process.env.REACT_APP_API_TEST}/user/GetAll/`,
-      {
-        headers: {
-          token: `Bearer ${access_token}`,
-        },
-      }
-    );
-
-    return res.data;
-  } catch (error) {
-    console.error("Error fetching users:", error.response || error);
-    // Có thể xử lý thêm ở đây
-  }
+export const getAllUser = async (access_token) => {
+  const res = await axiosJWT.get(
+    `${process.env.REACT_APP_API_TEST}/user/GetAll/`,
+    {
+      headers: {
+        token: `Bearer ${access_token}`,
+      },
+    }
+  );
+  return res.data;
 };
+// export const getAllUser = async () => {
+//   const access_token = JSON.parse(localStorage.getItem("access_token"));
+//   if (!access_token) {
+//     console.error("No access token found");
+//     return;
+//   }
+
+//   try {
+//     const res = await axiosJWT.get(
+//       `${process.env.REACT_APP_API_TEST}/user/GetAll/`,
+//       {
+//         headers: {
+//           token: `Bearer ${access_token}`,
+//         },
+//       }
+//     );
+
+//     return res.data;
+//   } catch (error) {
+//     console.error("Error fetching users:", error.response || error);
+//     // Có thể xử lý thêm ở đây
+//   }
+// };
 
 // export const getDetailsUser = async (id, access_token) => {
 //   try {
@@ -136,7 +135,13 @@ export const updateUser = async (id, data, access_token) => {
   return res.data;
 };
 
-// export const updateUser = async (id, data, access_token) => {
+// export const updateUser = async (id, data) => {
+//   const access_token = JSON.parse(localStorage.getItem("access_token"));
+//   if (!access_token) {
+//     console.error("No access token found");
+//     return;
+//   }
+
 //   try {
 //     const res = await axiosJWT.put(
 //       `${process.env.REACT_APP_API_TEST}/user/Update-User/${id}`,
@@ -149,16 +154,8 @@ export const updateUser = async (id, data, access_token) => {
 //     );
 //     return res.data;
 //   } catch (error) {
-//     console.error(
-//       "Error updating user:",
-//       error?.response?.data || error.message
-//     );
-//     throw (
-//       error?.response?.data || {
-//         message: "Update failed",
-//         details: error.message,
-//       }
-//     );
+//     console.error("Error updating user details:", error.response || error);
+//     // Có thể xử lý thêm ở đây nếu cần
 //   }
 // };
 

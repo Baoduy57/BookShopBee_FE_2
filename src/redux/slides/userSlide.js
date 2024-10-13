@@ -9,6 +9,7 @@ const initialState = {
   address: "",
   avatar: "",
   access_token: "",
+  city: "",
   isAdmin: false,
 };
 
@@ -26,6 +27,7 @@ export const userSlide = createSlice({
         phone = "",
         address = "",
         avatar = "",
+        city = "",
         isAdmin,
       } = action.payload;
       state.id = _id;
@@ -35,6 +37,7 @@ export const userSlide = createSlice({
       state.address = address;
       state.avatar = avatar;
       state.access_token = access_token;
+      state.city = city;
       state.isAdmin = isAdmin;
     },
     // resetUser: Đặt lại thông tin người dùng về giá trị mặc định
@@ -46,6 +49,7 @@ export const userSlide = createSlice({
       state.address = "";
       state.avatar = "";
       state.access_token = "";
+      state.city = "";
       state.isAdmin = false;
     },
   },

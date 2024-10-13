@@ -64,7 +64,7 @@ const AdminUser = () => {
     return res;
   });
   const getAllUsers = async () => {
-    const res = await UserService.getAllUser(); // Truyền token vào API
+    const res = await UserService.getAllUser(user?.access_token); // Truyền token vào API
     return res;
   };
 
@@ -338,7 +338,6 @@ const AdminUser = () => {
         isAdmin: user.isAdmin ? "TRUE" : "FALSE",
       }))
     : [];
-  console.log("users", users);
 
   useEffect(() => {
     if (isSuccessDeleted && dataDeleted?.status === "OK") {
