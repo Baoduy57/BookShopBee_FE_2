@@ -11,6 +11,7 @@ import {
   WrapperAddressProduct,
   WrapperQualityProduct,
   WrapperInputNumber,
+  WrapperStyleDetailsProduct,
 } from "./style";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
@@ -53,6 +54,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
     queryFn: fetchGetDetailsProduct,
     enabled: !!idProduct,
   });
+  console.log("productDetails", productDetails);
 
   const handleAddOrderProduct = () => {
     if (!user?.id) {
@@ -66,6 +68,8 @@ const ProductDetailsComponent = ({ idProduct }) => {
             image: productDetails?.image,
             price: productDetails?.price,
             product: productDetails?._id,
+            discount: productDetails?.discount,
+            countInStock: productDetails?.countInStock,
           },
         })
       );
@@ -79,6 +83,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
           padding: "16px",
           backgroundColor: "#fff",
           borderRadius: "4px",
+          minHeight: "100vh", // Đặt chiều cao tối thiểu cho trang là 80% chiều cao của viewport
         }}
       >
         <Col
@@ -151,7 +156,10 @@ const ProductDetailsComponent = ({ idProduct }) => {
               defaultValue={productDetails?.rating}
               value={productDetails?.rating}
             ></Rate>
-            <WrapperStyleTextSell> | Đã bán 1000+</WrapperStyleTextSell>
+            <WrapperStyleTextSell>
+              {" "}
+              | Đã bán {productDetails?.selled || 0}+
+            </WrapperStyleTextSell>
           </div>
 
           <WrapperPriceProduct>
@@ -211,6 +219,11 @@ const ProductDetailsComponent = ({ idProduct }) => {
             </WrapperQualityProduct>
           </div>
 
+          <div style={{ marginBottom: "10px" }}>Mô tả sản phẩm</div>
+          <WrapperStyleDetailsProduct>
+            {productDetails?.description}
+          </WrapperStyleDetailsProduct>
+
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <ButtonComponent
               bordered={false}
@@ -222,7 +235,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
                 borderRadius: "5px",
               }}
               onClick={handleAddOrderProduct}
-              textButton={"Select to buy"}
+              textButton={"Chọn để mua"}
               styleTextButton={{ color: "#fff" }}
             ></ButtonComponent>
 

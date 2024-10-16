@@ -33,6 +33,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   const [userAvatar, setUserAvatar] = useState("");
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [isOpenPopup, setIsOpenPopup] = useState(false);
   const order = useSelector((state) => state.order);
 
   const handleLogout = async () => {
@@ -66,25 +67,51 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     <div>
       <WrapperContentPopover
         onClick={() => {
-          navigate("/Profile-User");
+          handleClickNavigate("Profile");
         }}
       >
-        User information
+        Thông tin người dùng
       </WrapperContentPopover>
       {user?.isAdmin && (
         <WrapperContentPopover
           onClick={() => {
-            navigate("/System/Admin");
+            handleClickNavigate("Admin");
           }}
         >
-          Manage System
+          Quản lý hệ thống
         </WrapperContentPopover>
       )}
-      <WrapperContentPopover onClick={handleLogout}>
-        Log out
+      <WrapperContentPopover
+        onClick={() => {
+          handleClickNavigate("MyOrder");
+        }}
+      >
+        Đơn hàng của tôi
+      </WrapperContentPopover>
+      <WrapperContentPopover onClick={() => handleClickNavigate()}>
+        Đăng xuất
       </WrapperContentPopover>
     </div>
   );
+
+  const handleClickNavigate = (type) => {
+    if (type === "Profile") {
+      navigate("/Profile-User");
+    } else if (type === "Admin") {
+      navigate("/System/Admin");
+    } else if (type === "MyOrder") {
+      navigate("/MyOrderPage", {
+        state: {
+          id: user?.id,
+          token: user?.access_token,
+        },
+      });
+    } else {
+      handleLogout();
+
+      setIsOpenPopup(false);
+    }
+  };
   const onSearch = (e) => {
     setSearch(e.target.value);
     dispatch(searchProduct(e.target.value));
@@ -106,7 +133,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
         }}
       >
         <Col span={5}>
-          <WrapperTextHeader>BookShopBee</WrapperTextHeader>
+          <WrapperTextHeader to="/">BookShopBee</WrapperTextHeader>
         </Col>
         {!isHiddenSearch && (
           <Col span={13}>
@@ -142,8 +169,15 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
 
               {user?.access_token ? (
                 <>
-                  <Popover content={content} trigger={"click"}>
-                    <div style={{ cursor: "pointer" }}>
+                  <Popover
+                    content={content}
+                    trigger={"click"}
+                    open={isOpenPopup}
+                  >
+                    <div
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setIsOpenPopup((prev) => !prev)}
+                    >
                       {userName?.length ? userName : user?.email}
                     </div>
                   </Popover>
@@ -154,10 +188,10 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
                   style={{ cursor: "pointer" }}
                 >
                   <WrapperTextSmallHeader>
-                    Login/Register
+                    Đăng nhập/Đăng ký
                   </WrapperTextSmallHeader>
                   <div>
-                    <WrapperTextSmallHeader>Account</WrapperTextSmallHeader>
+                    <WrapperTextSmallHeader>Tài khoản</WrapperTextSmallHeader>
                     <CaretDownOutlined />
                   </div>
                 </div>
@@ -174,7 +208,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
                   style={{ fontSize: "30px", color: "white" }}
                 />
               </Badge>
-              <WrapperTextSmallHeader>Shopping Cart </WrapperTextSmallHeader>
+              <WrapperTextSmallHeader>Giỏ hàng </WrapperTextSmallHeader>
             </div>
           )}
         </Col>

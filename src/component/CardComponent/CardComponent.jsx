@@ -35,7 +35,8 @@ const CardComponent = (props) => {
       hoverable
       style={{ width: 200 }}
       cover={<img alt="example" src={image} />}
-      onClick={() => handleDetailsProduct(id)}
+      onClick={() => countInStock !== 0 && handleDetailsProduct(id)}
+      disabled={countInStock === 0}
     >
       <StyleNameProduct>{name}</StyleNameProduct>
       <WrapperReportText>
@@ -44,7 +45,7 @@ const CardComponent = (props) => {
           <StarFilled style={{ fontSize: "11px", color: "yellow" }} />
         </span>
 
-        <WrapperStyleTextSell> | Đã bán {selled || 1000}+</WrapperStyleTextSell>
+        <WrapperStyleTextSell> | Đã bán {selled || 0}+</WrapperStyleTextSell>
       </WrapperReportText>
 
       <WrapperPriceText>
