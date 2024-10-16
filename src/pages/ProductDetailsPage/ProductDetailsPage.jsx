@@ -15,9 +15,9 @@ const ProductDetailsPage = () => {
             style={{ cursor: "pointer", fontWeight: "bold" }}
             onClick={() => navigate("/")}
           >
-            Home
+            Trang chủ
           </span>
-          - Product details
+          - Chi tiết sản phẩm
         </h4>
         <ProductDetailsComponent idProduct={id}></ProductDetailsComponent>
       </div>

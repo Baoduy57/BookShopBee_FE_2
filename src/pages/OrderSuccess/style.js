@@ -14,8 +14,17 @@ export const WrapperStyleHeader = styled.div`
   }
 `;
 
-export const WrapperLeft = styled.div`
-  width: 910px;
+export const WrapperContainer = styled.div`
+  width: 100%;
+`;
+
+export const WrapperValue = styled.div`
+  background: rgb(240, 248, 255);
+  border: 1px solid rgb(194, 225, 255);
+  padding: 10px;
+  width: fit-content;
+  border-radius: 6px;
+  margin-top: 4px;
 `;
 
 export const WrapperListOrder = styled.div``;
@@ -23,9 +32,11 @@ export const WrapperListOrder = styled.div``;
 export const WrapperItemOrder = styled.div`
   display: flex;
   align-items: center;
-  padding: 9px 16px;
+  padding: 12px; // Thêm padding cho các sản phẩm
   background: #fff;
   margin-top: 12px;
+  justify-content: space-between; // Tạo khoảng cách giữa thông tin sản phẩm và giá tiền
+  border-radius: 8px; // Bo góc nhẹ cho khối sản phẩm
 `;
 
 export const WrapperPriceDiscount = styled.span`
@@ -53,23 +64,37 @@ export const WrapperRight = styled.div`
 `;
 
 export const WrapperInfo = styled.div`
-  padding: 17px 20px;
+  padding: 20px; // Thêm padding để tạo khoảng cách bên trong
   border-bottom: 1px solid #f5f5f5;
   background: #fff;
-  border-top-right-radius: 6px;
-  border-top-left-radius: 6px;
+  border-radius: 6px; // Thêm bo tròn góc
+  margin-top: 15px; // Thêm khoảng cách giữa các khối
   width: 100%;
+`;
+
+export const WrapperItemOrderInfo = styled.div`
+  padding: 20px; // Tăng khoảng cách giữa các sản phẩm
+  background: #fff;
+  border-radius: 6px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 1fr)
+  ); // Hiển thị theo lưới
+  gap: 20px; // Tạo khoảng cách giữa các sản phẩm
 `;
 
 export const WrapperTotal = styled.div`
   display: flex;
-
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 17px 20px;
+  align-items: center;
+  justify-content: flex-end; // Đẩy phần tổng tiền về phía bên phải
+  padding: 20px; // Thêm padding
   background: #fff;
-  border-bottom-right-radius: 6px;
-  border-bottom-left-radius: 6px;
+  font-size: 20px; // Tăng kích thước chữ cho phần tổng tiền
+  color: red; // Màu đỏ cho phần tổng tiền
+  font-weight: bold; // Tạo sự nổi bật
+  border-radius: 6px;
 `;
 
 export const Lable = styled.span`
@@ -79,14 +104,13 @@ export const Lable = styled.span`
 `;
 
 export const WrapperRadio = styled(Radio.Group)`
-  margin-top: 6px;
+  margin-top: 10px;
   background: rgb(240, 248, 255);
   border: 1px solid rgb(194, 225, 255);
-  width: 500px;
+  width: 100%; // Căn chiều rộng đầy đủ
+  max-width: 500px; // Giới hạn chiều rộng
   border-radius: 4px;
-  height: 100px;
   padding: 16px;
-  font-weight: normal;
   display: flex;
   flex-direction: column;
   gap: 10px;

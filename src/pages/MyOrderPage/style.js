@@ -1,4 +1,3 @@
-import { Radio } from "antd";
 import styled from "styled-components";
 
 export const WrapperStyleHeader = styled.div`
@@ -14,18 +13,34 @@ export const WrapperStyleHeader = styled.div`
   }
 `;
 
+export const WrapperStyleHeaderDelivery = styled.div`
+  background: rgb(255, 255, 255);
+  padding: 9px 16px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  span {
+    color: rgb(36, 36, 36);
+    font-weight: 400;
+    font-size: 13px;
+  }
+  margin-bottom: 7px;
+`;
+
+export const WrapperContainer = styled.div`
+  width: 100%;
+  background-color: #f5f5fa;
+`;
+
 export const WrapperLeft = styled.div`
   width: 910px;
 `;
 
-export const WrapperListOrder = styled.div``;
-
-export const WrapperItemOrder = styled.div`
+export const WrapperListOrder = styled.div`
   display: flex;
-  align-items: center;
-  padding: 9px 16px;
-  background: #fff;
-  margin-top: 12px;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 20px;
 `;
 
 export const WrapperPriceDiscount = styled.span`
@@ -63,7 +78,6 @@ export const WrapperInfo = styled.div`
 
 export const WrapperTotal = styled.div`
   display: flex;
-
   align-items: flex-start;
   justify-content: space-between;
   padding: 17px 20px;
@@ -72,23 +86,33 @@ export const WrapperTotal = styled.div`
   border-bottom-left-radius: 6px;
 `;
 
-export const Lable = styled.span`
-  font-size: 12px;
-  color: #000;
-  font-weight: bold;
+export const WrapperItemOrder = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 9px 16px;
+  background: #fff;
+  margin-top: 12px;
+  flex-direction: column;
+  width: 950px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 12px 12px #ccc;
 `;
 
-export const WrapperRadio = styled(Radio.Group)`
-  margin-top: 6px;
-  background: rgb(240, 248, 255);
-  border: 1px solid rgb(194, 225, 255);
-  width: 500px;
-  border-radius: 4px;
-  height: 100px;
-  padding: 16px;
-  font-weight: normal;
+export const WrapperStatus = styled.div`
+  display: flex;
+  align-item: flex-start;
+  width: 100%;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgb(235, 235, 240);
+  flex-direction: column;
+`;
+
+export const WrapperFooterItem = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  justify-content: center;
+  border-top: 1px solid rgb(235, 235, 240);
 `;

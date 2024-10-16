@@ -20,6 +20,8 @@ import * as OrderService from "../../services/OrderService";
 import Loading from "../../component/LoadingComponent/Loading";
 import * as Message from "../../component/Message/Message";
 import { updateUser } from "../../redux/slides/userSlide";
+import { useNavigate } from "react-router-dom";
+import { removeAllOrderProduct } from "../../redux/slides/orderSlide";
 
 const PaymentPage = () => {
   const order = useSelector((state) => state.order);
@@ -33,6 +35,8 @@ const PaymentPage = () => {
     address: "",
     city: "",
   });
+
+  const navigate = useNavigate();
 
   const [form] = Form.useForm();
 
@@ -66,7 +70,8 @@ const PaymentPage = () => {
 
   const priceDiscountMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
-      return total + cur.discount * cur.amount;
+      const totalDiscount = cur.discount ? cur.discount : 0;
+      return total + (priceMemo * (totalDiscount * cur.amount)) / 100;
     }, 0);
     if (Number(result)) {
       return result;
@@ -139,7 +144,20 @@ const PaymentPage = () => {
 
   useEffect(() => {
     if (isSuccess && dataAdd?.status === "OK") {
-      Message.success("Order successfully");
+      const arrayOrdered = [];
+      order?.orderItemsSelected?.forEach((element) => {
+        arrayOrdered.push(element.product);
+      });
+      dispatch(removeAllOrderProduct({ listChecked: arrayOrdered }));
+      Message.success("Đặt hàng thành công");
+      navigate("/OrderSuccess", {
+        state: {
+          delivery,
+          payment,
+          orders: order?.orderItemsSelected,
+          totalPrice: totalPriceMemo,
+        },
+      });
     } else if (isError) {
       Message.error();
     }
@@ -193,24 +211,24 @@ const PaymentPage = () => {
     <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
       {/* <Loading isPending={isLoadingAddOrder}> */}
       <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
-        <h3>Select payment method</h3>
+        <h3>Chọn phương thức thanh toán</h3>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <WrapperLeft>
             <WrapperInfo>
               <div>
-                <Lable>chon phuong thuc giao hang</Lable>
+                <Lable>Chọn phương thức giao hàng</Lable>
                 <WrapperRadio onChange={handleDilivery} value={delivery}>
                   <Radio value="fast">
                     <span style={{ color: "#ea8500", fontWeight: "bold" }}>
                       FAST
                     </span>
-                    Giao hang tiet kiem
+                    Giao hàng tiết kiệm
                   </Radio>
                   <Radio value="gojek">
                     <span style={{ color: "#ea8500", fontWeight: "bold" }}>
                       GO_JEK
                     </span>
-                    Giao hang tiet kiem
+                    Giao hàng tiết kiệm
                   </Radio>
                 </WrapperRadio>
               </div>
@@ -218,10 +236,10 @@ const PaymentPage = () => {
 
             <WrapperInfo>
               <div>
-                <Lable>chon phuong thuc thanh toan</Lable>
+                <Lable>Chọn phương thức thanh toán</Lable>
                 <WrapperRadio onChange={handlePayment} value={payment}>
                   <Radio value="later_money">
-                    thanh toan tien mat khi nhan hang
+                    Thanh toán tiền mặt khi nhận hàng
                   </Radio>
                 </WrapperRadio>
               </div>
@@ -232,15 +250,15 @@ const PaymentPage = () => {
             <div style={{ width: "100%" }}>
               <WrapperInfo>
                 <div>
-                  <span>Dia chi: </span>
+                  <span>Địa chỉ: </span>
                   <span
                     style={{ fontWeight: "bold" }}
-                  >{`${user?.address} ${user?.city}`}</span>
+                  >{`${user?.address} ${user?.city} `}</span>
                   <span
                     style={{ color: "blue", cursor: "pointer" }}
                     onClick={handleChangeAddress}
                   >
-                    Thay doi
+                    Thay đổi
                   </span>
                 </div>
               </WrapperInfo>
@@ -253,7 +271,7 @@ const PaymentPage = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <span>Provisional</span>
+                  <span>Tạm tính</span>
                   <span
                     style={{
                       color: "#000",
@@ -272,7 +290,7 @@ const PaymentPage = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <span>Discount</span>
+                  <span>Giảm giá</span>
                   <span
                     style={{
                       color: "#000",
@@ -280,7 +298,7 @@ const PaymentPage = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    {`${priceDiscountMemo} %`}
+                    {convertPrice(priceDiscountMemo)}
                   </span>
                 </div>
 
@@ -291,7 +309,7 @@ const PaymentPage = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <span>Shipping fee</span>
+                  <span>Phí giao hàng</span>
                   <span
                     style={{
                       color: "#000",
@@ -305,8 +323,13 @@ const PaymentPage = () => {
               </WrapperInfo>
 
               <WrapperTotal>
-                <span>Total amount</span>
-                <span style={{ display: "flex", flexDirection: "column" }}>
+                <span>Tổng số tiền</span>
+                <span
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
                   <span
                     style={{
                       color: "rgb(254,56,52)",
@@ -317,7 +340,7 @@ const PaymentPage = () => {
                     {convertPrice(totalPriceMemo)}
                   </span>
                   <span style={{ color: "#000", fontSize: "11px" }}>
-                    (VAT included if applicable)
+                    (Đã bao gồm VAT nếu có)
                   </span>
                 </span>
               </WrapperTotal>
@@ -333,7 +356,7 @@ const PaymentPage = () => {
                 borderRadius: "5px",
                 border: "none",
               }}
-              textButton={"Order product"}
+              textButton={"Đặt hàng sản phẩm"}
               styleTextButton={{
                 color: "#fff",
                 fontSize: "15px",
@@ -345,7 +368,7 @@ const PaymentPage = () => {
       </div>
 
       <ModalComponent
-        title="Update delivery information"
+        title="Cập nhật thông tin giao hàng"
         open={isModalOpenUpdateInfo}
         onCancel={handleCancelUpdate}
         onOk={handleUpdateInfoUser}

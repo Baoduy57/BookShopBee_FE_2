@@ -8,6 +8,7 @@ import {
   WrapperPriceDiscount,
   WrapperRight,
   WrapperStyleHeader,
+  WrapperStyleHeaderDelivery,
   WrapperTotal,
 } from "./style";
 import { Button, Checkbox, Form } from "antd";
@@ -31,6 +32,7 @@ import Loading from "../../component/LoadingComponent/Loading";
 import * as Message from "../../component/Message/Message";
 import { updateUser } from "../../redux/slides/userSlide";
 import { useNavigate } from "react-router-dom";
+import StepComponent from "../../component/StepComponent/StepComponent";
 
 const OrderPage = () => {
   const order = useSelector((state) => state.order);
@@ -60,11 +62,15 @@ const OrderPage = () => {
     }
   };
 
-  const handleChangeCount = (type, idProduct) => {
+  const handleChangeCount = (type, idProduct, limited) => {
     if (type === "increase") {
-      dispatch(increaseAmount({ idProduct }));
+      if (!limited) {
+        dispatch(increaseAmount({ idProduct }));
+      }
     } else {
-      dispatch(decreaseAmount({ idProduct }));
+      if (!limited) {
+        dispatch(decreaseAmount({ idProduct }));
+      }
     }
   };
 
@@ -116,7 +122,8 @@ const OrderPage = () => {
 
   const priceDiscountMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
-      return total + cur.discount * cur.amount;
+      const totalDiscount = cur.discount ? cur.discount : 0;
+      return total + (priceMemo * (totalDiscount * cur.amount)) / 100;
     }, 0);
     if (Number(result)) {
       return result;
@@ -125,9 +132,9 @@ const OrderPage = () => {
   }, [order]);
 
   const diliveryPriceMemo = useMemo(() => {
-    if (priceMemo >= 200000) {
+    if (priceMemo >= 200000 && priceMemo < 500000) {
       return 20000;
-    } else if (priceMemo === 0) {
+    } else if (priceMemo >= 500000 || order?.orderItemsSelected?.length === 0) {
       return 0;
     } else {
       return 50000;
@@ -201,19 +208,49 @@ const OrderPage = () => {
     });
   };
 
+  const itemsDelivery = [
+    {
+      title: "50.000 VND",
+      description: "Dưới 200.000 VND",
+    },
+    {
+      title: "20.000 VND",
+      description: "Từ 200.000 VND đến dưới 500.000 VND",
+    },
+    {
+      title: "0 VND",
+      description: "Trên 500.000 VND",
+    },
+  ];
+
   return (
     <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
       <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
-        <h3>Shopping cart</h3>
+        <h3>Giỏ hàng</h3>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <WrapperLeft>
+            <WrapperStyleHeaderDelivery>
+              <StepComponent
+                items={itemsDelivery}
+                current={
+                  diliveryPriceMemo === 20000
+                    ? 2
+                    : diliveryPriceMemo === 50000
+                    ? 1
+                    : order.orderItemsSelected?.length === 0
+                    ? 0
+                    : 3
+                }
+              ></StepComponent>
+            </WrapperStyleHeaderDelivery>
+
             <WrapperStyleHeader>
               <span style={{ display: "inline-block", width: "390px" }}>
                 <Checkbox
                   onChange={handleOnchangeCheckAll}
                   checked={listChecked?.length === order?.orderItems?.length}
                 ></Checkbox>
-                <span>All ({order?.orderItems?.length} product)</span>
+                <span>Tất cả ({order?.orderItems?.length} sản phẩm)</span>
               </span>
               <div
                 style={{
@@ -223,9 +260,9 @@ const OrderPage = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <span>Unit price</span>
-                <span>Quantity</span>
-                <span>Total amount</span>
+                <span>Đơn giá</span>
+                <span>Số lượng</span>
+                <span>Tổng số tiền</span>
                 <DeleteOutlined
                   style={{ cursor: "pointer" }}
                   onClick={handleRemoveAllOrder}
@@ -291,7 +328,11 @@ const OrderPage = () => {
                             cursor: "pointer",
                           }}
                           onClick={() =>
-                            handleChangeCount("decrease", order?.product)
+                            handleChangeCount(
+                              "decrease",
+                              order?.product,
+                              order?.amount === 1
+                            )
                           }
                         >
                           <MinusOutlined
@@ -303,6 +344,8 @@ const OrderPage = () => {
                           defaultValue={order?.amount}
                           value={order?.amount}
                           size="small"
+                          min={1}
+                          max={order?.countInStock}
                         ></WrapperInputNumber>
 
                         <button
@@ -312,7 +355,11 @@ const OrderPage = () => {
                             cursor: "pointer",
                           }}
                           onClick={() =>
-                            handleChangeCount("increase", order?.product)
+                            handleChangeCount(
+                              "increase",
+                              order?.product,
+                              order?.amount === order?.countInStock
+                            )
                           }
                         >
                           <PlusOutlined
@@ -345,15 +392,15 @@ const OrderPage = () => {
             <div style={{ width: "100%" }}>
               <WrapperInfo>
                 <div>
-                  <span>Dia chi: </span>
+                  <span>Địa chỉ: </span>
                   <span
                     style={{ fontWeight: "bold" }}
-                  >{`${user?.address} ${user?.city}`}</span>
+                  >{`${user?.address} ${user?.city} `}</span>
                   <span
                     style={{ color: "blue", cursor: "pointer" }}
                     onClick={handleChangeAddress}
                   >
-                    Thay doi
+                    Thay đổi
                   </span>
                 </div>
               </WrapperInfo>
@@ -366,7 +413,7 @@ const OrderPage = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <span>Provisional</span>
+                  <span>Tạm tính</span>
                   <span
                     style={{
                       color: "#000",
@@ -385,7 +432,7 @@ const OrderPage = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <span>Discount</span>
+                  <span>Giảm giá</span>
                   <span
                     style={{
                       color: "#000",
@@ -393,7 +440,7 @@ const OrderPage = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    {`${priceDiscountMemo} %`}
+                    {convertPrice(priceDiscountMemo)}
                   </span>
                 </div>
 
@@ -404,7 +451,7 @@ const OrderPage = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <span>Shipping fee</span>
+                  <span>Phí giao hàng</span>
                   <span
                     style={{
                       color: "#000",
@@ -418,7 +465,7 @@ const OrderPage = () => {
               </WrapperInfo>
 
               <WrapperTotal>
-                <span>Total amount</span>
+                <span>Tổng tiền</span>
                 <span style={{ display: "flex", flexDirection: "column" }}>
                   <span
                     style={{
@@ -430,7 +477,7 @@ const OrderPage = () => {
                     {convertPrice(totalPriceMemo)}
                   </span>
                   <span style={{ color: "#000", fontSize: "11px" }}>
-                    (VAT included if applicable)
+                    (Đã bao gồm VAT nếu có)
                   </span>
                 </span>
               </WrapperTotal>
@@ -446,7 +493,7 @@ const OrderPage = () => {
                 borderRadius: "5px",
                 border: "none",
               }}
-              textButton={"Purchase"}
+              textButton={"Mua hàng"}
               styleTextButton={{
                 color: "#fff",
                 fontSize: "15px",
@@ -458,7 +505,7 @@ const OrderPage = () => {
       </div>
 
       <ModalComponent
-        title="Update delivery information"
+        title="Cập nhật thông tin giao hàng"
         open={isModalOpenUpdateInfo}
         onCancel={handleCancelUpdate}
         onOk={handleUpdateInfoUser}

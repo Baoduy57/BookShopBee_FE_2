@@ -7,11 +7,13 @@ export const WrapperCardStyle = styled(Card)`
     height: 200px;
     width: 200px;
   }
+  backgroud-color: ${(props) => (props.disabled ? "#ccc" : "#fff")};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
 `;
 
 export const StyleNameProduct = styled.div`
   font-weight: 400;
-  font-size: 18px;
+  font-size: 15px;
   line-height: 13px;
   color: rgb(56, 56, 61);
 `;
