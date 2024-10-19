@@ -98,8 +98,8 @@ export const cancelOrder = async (id, access_token, orderItems) => {
       headers: {
         token: `Bearer ${access_token}`,
       },
-    },
-    { data: orderItems }
+      data: orderItems,
+    }
   );
   return res.data;
 };

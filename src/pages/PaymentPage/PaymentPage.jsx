@@ -19,9 +19,11 @@ import * as UserService from "../../services/UserService";
 import * as OrderService from "../../services/OrderService";
 import Loading from "../../component/LoadingComponent/Loading";
 import * as Message from "../../component/Message/Message";
+import * as PaymentService from "../../services/PaymentService";
 import { updateUser } from "../../redux/slides/userSlide";
 import { useNavigate } from "react-router-dom";
 import { removeAllOrderProduct } from "../../redux/slides/orderSlide";
+import { PayPalButton } from "react-paypal-button-v2";
 
 const PaymentPage = () => {
   const order = useSelector((state) => state.order);
@@ -29,6 +31,7 @@ const PaymentPage = () => {
   const [delivery, setDelivery] = useState("fast");
   const [payment, setPayment] = useState("later_money");
   const [isModalOpenUpdateInfo, setIsModalOpenUpdateInfo] = useState(false);
+  const [sdkReady, setSdkReady] = useState(false);
   const [stateUserDetails, setstateUserDetails] = useState({
     name: "",
     phone: "",
@@ -119,6 +122,7 @@ const PaymentPage = () => {
         totalPrice: totalPriceMemo,
         user: user?.id,
       });
+      console.log("User ID from client:", user?.id);
     }
   };
 
@@ -130,6 +134,7 @@ const PaymentPage = () => {
 
   const mutationAddOrder = useMutationHooks((data) => {
     const { token, ...rests } = data;
+    console.log("Data being sent to createOrder:", rests); // Kiểm tra xem `userId` có trong `rests` không
     const res = OrderService.createOrder(rests, token);
     return res;
   });
@@ -207,6 +212,25 @@ const PaymentPage = () => {
     setPayment(e.target.value);
   };
 
+  const addPaypalScript = async () => {
+    const { data } = await PaymentService.getConfig();
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = `https://sandbox.paypal.com/sdk/js?client-id=${data}`;
+    script.async = true;
+    script.onload = () => {
+      setSdkReady(true);
+    };
+    document.body.appendChild(script);
+  };
+  useEffect(() => {
+    if (!window.paypal) {
+      addPaypalScript();
+    } else {
+      setSdkReady(true);
+    }
+  }, []);
+
   return (
     <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
       {/* <Loading isPending={isLoadingAddOrder}> */}
@@ -241,6 +265,7 @@ const PaymentPage = () => {
                   <Radio value="later_money">
                     Thanh toán tiền mặt khi nhận hàng
                   </Radio>
+                  <Radio value="paypal">Thanh toán tiền bằng paypal</Radio>
                 </WrapperRadio>
               </div>
             </WrapperInfo>
@@ -345,24 +370,49 @@ const PaymentPage = () => {
                 </span>
               </WrapperTotal>
             </div>
+            {payment === "paypal" && sdkReady ? (
+              <div style={{ width: "320px" }}>
+                <PayPalButton
+                  amount="0.01"
+                  // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
+                  onSuccess={(details, data) => {
+                    alert(
+                      "Transaction completed by " +
+                        details.payer.name.given_name
+                    );
 
-            <ButtonComponent
-              onClick={() => handleAddOrder()}
-              size={40}
-              styleButton={{
-                background: "rgb(225,57,69)",
-                height: "48px",
-                width: "320px",
-                borderRadius: "5px",
-                border: "none",
-              }}
-              textButton={"Đặt hàng sản phẩm"}
-              styleTextButton={{
-                color: "#fff",
-                fontSize: "15px",
-                fontWeight: "700",
-              }}
-            ></ButtonComponent>
+                    // OPTIONAL: Call your server to save the transaction
+                    return fetch("/paypal-transaction-complete", {
+                      method: "post",
+                      body: JSON.stringify({
+                        orderID: data.orderID,
+                      }),
+                    });
+                  }}
+                  onError={() => {
+                    alert("Error!");
+                  }}
+                />
+              </div>
+            ) : (
+              <ButtonComponent
+                onClick={() => handleAddOrder()}
+                size={40}
+                styleButton={{
+                  background: "rgb(225,57,69)",
+                  height: "48px",
+                  width: "320px",
+                  borderRadius: "5px",
+                  border: "none",
+                }}
+                textButton={"Đặt hàng sản phẩm"}
+                styleTextButton={{
+                  color: "#fff",
+                  fontSize: "15px",
+                  fontWeight: "700",
+                }}
+              ></ButtonComponent>
+            )}
           </WrapperRight>
         </div>
       </div>
