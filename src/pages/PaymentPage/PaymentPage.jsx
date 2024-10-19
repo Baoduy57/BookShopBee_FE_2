@@ -122,7 +122,7 @@ const PaymentPage = () => {
         totalPrice: totalPriceMemo,
         user: user?.id,
       });
-      console.log("User ID from client:", user?.id);
+      // console.log("User ID from client:", user?.id);
     }
   };
 
@@ -134,7 +134,7 @@ const PaymentPage = () => {
 
   const mutationAddOrder = useMutationHooks((data) => {
     const { token, ...rests } = data;
-    console.log("Data being sent to createOrder:", rests); // Kiểm tra xem `userId` có trong `rests` không
+    // console.log("Data being sent to createOrder:", rests); // Kiểm tra xem `userId` có trong `rests` không
     const res = OrderService.createOrder(rests, token);
     return res;
   });
@@ -177,6 +177,24 @@ const PaymentPage = () => {
     });
     form.resetFields();
     setIsModalOpenUpdateInfo(false);
+  };
+
+  const onSuccessPaypal = (details, data) => {
+    mutationAddOrder.mutate({
+      token: user?.access_token,
+      orderItems: order?.orderItemsSelected,
+      fullName: user?.name,
+      address: user?.address,
+      phone: user?.phone,
+      city: user?.city,
+      paymentMethod: payment,
+      itemsPrice: priceMemo,
+      shippingPrice: diliveryPriceMemo,
+      totalPrice: totalPriceMemo,
+      user: user?.id,
+      isPaid: true,
+      paiAt: details,
+    });
   };
 
   const handleUpdateInfoUser = () => {
@@ -373,22 +391,9 @@ const PaymentPage = () => {
             {payment === "paypal" && sdkReady ? (
               <div style={{ width: "320px" }}>
                 <PayPalButton
-                  amount="0.01"
+                  amount={totalPriceMemo}
                   // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
-                  onSuccess={(details, data) => {
-                    alert(
-                      "Transaction completed by " +
-                        details.payer.name.given_name
-                    );
-
-                    // OPTIONAL: Call your server to save the transaction
-                    return fetch("/paypal-transaction-complete", {
-                      method: "post",
-                      body: JSON.stringify({
-                        orderID: data.orderID,
-                      }),
-                    });
-                  }}
+                  onSuccess={onSuccessPaypal}
                   onError={() => {
                     alert("Error!");
                   }}

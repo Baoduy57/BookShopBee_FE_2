@@ -103,30 +103,3 @@ export const cancelOrder = async (id, access_token, orderItems) => {
   );
   return res.data;
 };
-
-// export const cancelOrder = async (id, orderItems) => {
-//   // Lấy access_token từ LocalStorage
-//   const access_token = JSON.parse(localStorage.getItem("access_token"));
-//   if (!access_token) {
-//     console.error("No access token found");
-//     return;
-//   }
-//   console.log("access token: ", access_token);
-
-//   try {
-//     const res = await axiosJWT.delete(
-//       `${process.env.REACT_APP_API_TEST}/order/Cancel-Order/${id}`,
-
-//       {
-//         headers: {
-//           token: `Bearer ${access_token}`,
-//         },
-//       },
-//       { data: orderItems }
-//     );
-//     return res.data;
-//   } catch (error) {
-//     console.error("Error canceling order:", error.response || error);
-//     // Có thể xử lý thêm ở đây
-//   }
-// };
