@@ -592,7 +592,7 @@ const AdminProduct = () => {
 
   return (
     <div>
-      <WrapperHeader>Product Management</WrapperHeader>
+      <WrapperHeader>Quản lý sản phẩm</WrapperHeader>
 
       <div style={{ marginTop: "10px" }}>
         <Button

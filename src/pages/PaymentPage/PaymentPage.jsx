@@ -121,6 +121,7 @@ const PaymentPage = () => {
         shippingPrice: diliveryPriceMemo,
         totalPrice: totalPriceMemo,
         user: user?.id,
+        email: user?.email,
       });
       // console.log("User ID from client:", user?.id);
     }

@@ -123,7 +123,9 @@ const OrderPage = () => {
   const priceDiscountMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
       const totalDiscount = cur.discount ? cur.discount : 0;
-      return total + (priceMemo * (totalDiscount * cur.amount)) / 100;
+      // return total + (priceMemo * (totalDiscount * cur.amount)) / 100;
+      // Tổng giảm giá cho tất cả sản phẩm đã chọn
+      return total + ((cur.price * totalDiscount) / 100) * cur.amount;
     }, 0);
     if (Number(result)) {
       return result;
@@ -140,6 +142,16 @@ const OrderPage = () => {
       return 50000;
     }
   }, [priceMemo]);
+
+  // const diliveryPriceMemo = useMemo(() => {
+  //   if (priceMemo < 200000) {
+  //     return 50000;
+  //   } else if (priceMemo >= 200000 && priceMemo < 500000) {
+  //     return 20000;
+  //   } else if (priceMemo >= 500000 || order?.orderItemsSelected?.length === 0) {
+  //     return 0;
+  //   }
+  // }, [priceMemo]);
 
   const totalPriceMemo = useMemo(() => {
     return (
@@ -207,6 +219,21 @@ const OrderPage = () => {
       [e.target.name]: e.target.value,
     });
   };
+  const currentStep = useMemo(() => {
+    if (order.orderItemsSelected?.length === 0) {
+      return null; // Không có sản phẩm được chọn
+    }
+    if (priceMemo < 200000) {
+      return 0; // Phí giao hàng 50.000 VND
+    }
+    if (priceMemo >= 200000 && priceMemo < 500000) {
+      return 1; // Phí giao hàng 20.000 VND
+    }
+    if (priceMemo >= 500000) {
+      return 2; // Phí giao hàng 0 VND
+    }
+    return null; // Mặc định
+  }, [priceMemo, order.orderItemsSelected]);
 
   const itemsDelivery = [
     {
@@ -232,15 +259,7 @@ const OrderPage = () => {
             <WrapperStyleHeaderDelivery>
               <StepComponent
                 items={itemsDelivery}
-                current={
-                  diliveryPriceMemo === 20000
-                    ? 2
-                    : diliveryPriceMemo === 50000
-                    ? 1
-                    : order.orderItemsSelected?.length === 0
-                    ? 0
-                    : 3
-                }
+                current={currentStep}
               ></StepComponent>
             </WrapperStyleHeaderDelivery>
 

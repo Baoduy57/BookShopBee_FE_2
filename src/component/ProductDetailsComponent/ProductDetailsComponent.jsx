@@ -1,5 +1,5 @@
 import { Col, Row, Image, Rate } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import imageProductSmall from "../../assets/images/detail2.webp";
 import {
   WrapperStyleImageSmall,
@@ -20,15 +20,18 @@ import { useQuery } from "@tanstack/react-query";
 import Loading from "../LoadingComponent/Loading";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { addOrderProduct } from "../../redux/slides/orderSlide";
+import { addOrderProduct, resetOrder } from "../../redux/slides/orderSlide";
 import { convertPrice } from "../../utils";
+import * as message from "../Message/Message";
 
 const ProductDetailsComponent = ({ idProduct }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
   const [numProduct, setNumProduct] = useState(1);
+  const [errorLimitOrder, setErrorLimitOrder] = useState(false);
   const user = useSelector((state) => state.user);
+  const order = useSelector((state) => state.order);
   const onChange = (value) => {
     setNumProduct(Number(value));
   };
@@ -41,11 +44,38 @@ const ProductDetailsComponent = ({ idProduct }) => {
     }
   };
 
-  const handleChangeCount = (type) => {
-    if (type === "increase") {
-      setNumProduct(numProduct + 1);
+  useEffect(() => {
+    const orderRedux = order?.orderItems?.find(
+      (item) => item.product === productDetails?._id
+    );
+    if (
+      orderRedux?.amount + numProduct <= orderRedux?.countInStock ||
+      (!orderRedux && productDetails?.countInStock > 0)
+    ) {
+      setErrorLimitOrder(false);
     } else {
-      setNumProduct(numProduct - 1);
+      setErrorLimitOrder(true);
+    }
+  }, [numProduct]);
+
+  useEffect(() => {
+    if (order.isSuccessOrder) {
+      message.success("Đã thêm vào giỏ hàng");
+    }
+    return () => {
+      dispatch(resetOrder());
+    };
+  }, [order.isSuccessOrder]);
+
+  const handleChangeCount = (type, limited) => {
+    if (type === "increase") {
+      if (!limited) {
+        setNumProduct(numProduct + 1);
+      }
+    } else {
+      if (!limited) {
+        setNumProduct(numProduct - 1);
+      }
     }
   };
 
@@ -54,25 +84,35 @@ const ProductDetailsComponent = ({ idProduct }) => {
     queryFn: fetchGetDetailsProduct,
     enabled: !!idProduct,
   });
-  console.log("productDetails", productDetails);
+  // console.log("productDetails", productDetails);
 
   const handleAddOrderProduct = () => {
     if (!user?.id) {
       navigate("/Sign-In", { state: location?.pathname });
     } else {
-      dispatch(
-        addOrderProduct({
-          orderItem: {
-            name: productDetails?.name,
-            amount: numProduct,
-            image: productDetails?.image,
-            price: productDetails?.price,
-            product: productDetails?._id,
-            discount: productDetails?.discount,
-            countInStock: productDetails?.countInStock,
-          },
-        })
+      const orderRedux = order?.orderItems?.find(
+        (item) => item.product === productDetails?._id
       );
+      if (
+        orderRedux?.amount + numProduct <= orderRedux?.countInStock ||
+        (!orderRedux && productDetails?.countInStock > 0)
+      ) {
+        dispatch(
+          addOrderProduct({
+            orderItem: {
+              name: productDetails?.name,
+              amount: numProduct,
+              image: productDetails?.image,
+              price: productDetails?.price,
+              product: productDetails?._id,
+              discount: productDetails?.discount,
+              countInStock: productDetails?.countInStock,
+            },
+          })
+        );
+      } else {
+        setErrorLimitOrder(true);
+      }
     }
   };
 
@@ -190,7 +230,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
                   background: "transparent",
                   cursor: "pointer",
                 }}
-                onClick={() => handleChangeCount("decrease")}
+                onClick={() => handleChangeCount("decrease", numProduct === 1)}
               >
                 <MinusOutlined
                   style={{ color: "black", fontSize: "20px" }}
@@ -200,6 +240,8 @@ const ProductDetailsComponent = ({ idProduct }) => {
               <WrapperInputNumber
                 onChange={onChange}
                 defaultValue={1}
+                min={1}
+                max={productDetails?.countInStock}
                 value={numProduct}
                 size="small"
               ></WrapperInputNumber>
@@ -210,7 +252,12 @@ const ProductDetailsComponent = ({ idProduct }) => {
                   background: "transparent",
                   cursor: "pointer",
                 }}
-                onClick={() => handleChangeCount("increase")}
+                onClick={() =>
+                  handleChangeCount(
+                    "increase",
+                    numProduct === productDetails?.countInStock
+                  )
+                }
               >
                 <PlusOutlined
                   style={{ color: "black", fontSize: "20px" }}
@@ -225,22 +272,25 @@ const ProductDetailsComponent = ({ idProduct }) => {
           </WrapperStyleDetailsProduct>
 
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <ButtonComponent
-              bordered={false}
-              size={40}
-              styleButton={{
-                background: "rgb(225,57,69)",
-                height: "48px",
-                width: "220px",
-                borderRadius: "5px",
-              }}
-              onClick={handleAddOrderProduct}
-              textButton={"Chọn để mua"}
-              styleTextButton={{ color: "#fff" }}
-            ></ButtonComponent>
+            <div>
+              <ButtonComponent
+                size={40}
+                styleButton={{
+                  background: "rgb(225,57,69)",
+                  height: "48px",
+                  width: "220px",
+                  borderRadius: "5px",
+                }}
+                onClick={handleAddOrderProduct}
+                textButton={"Chọn để mua"}
+                styleTextButton={{ color: "#fff" }}
+              ></ButtonComponent>
+              {errorLimitOrder && (
+                <div style={{ color: "red" }}>Sản phẩm đã hết hàng</div>
+              )}
+            </div>
 
             <ButtonComponent
-              bordered={false}
               size={40}
               styleButton={{
                 background: "#fff",
