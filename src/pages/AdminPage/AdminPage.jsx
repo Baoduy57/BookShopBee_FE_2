@@ -8,8 +8,8 @@ import AdminProduct from "../../component/AdminProduct/AdminProduct";
 
 const AdminPage = () => {
   const items = [
-    getItem("User", "user", <UserOutlined />),
-    getItem("Product", "product", <AppstoreOutlined />),
+    getItem("Người dùng", "user", <UserOutlined />),
+    getItem("Sản phẩm", "product", <AppstoreOutlined />),
   ];
 
   const [selectedKeys, setSelectedKeys] = useState("");

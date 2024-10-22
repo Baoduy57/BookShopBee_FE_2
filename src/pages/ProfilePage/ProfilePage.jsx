@@ -127,7 +127,7 @@ const ProfilePage = () => {
 
   return (
     <div style={{ width: "1270px", margin: "0 auto", height: "500px" }}>
-      <WrapperHeaderProfile>User Information</WrapperHeaderProfile>
+      <WrapperHeaderProfile>Thông tin người dùng</WrapperHeaderProfile>
       <Loading isPending={isPending}>
         <WrapperContentProfile>
           <WrapperInput>

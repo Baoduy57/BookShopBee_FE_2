@@ -35,7 +35,7 @@ const CardComponent = (props) => {
       hoverable
       style={{ width: 200 }}
       cover={<img alt="example" src={image} />}
-      onClick={() => countInStock !== 0 && handleDetailsProduct(id)}
+      onClick={() => handleDetailsProduct(id)}
       disabled={countInStock === 0}
     >
       <StyleNameProduct>{name}</StyleNameProduct>
@@ -50,7 +50,7 @@ const CardComponent = (props) => {
 
       <WrapperPriceText>
         <span style={{ marginRight: "8px" }}>{convertPrice(price)}</span>
-        <WrapperDiscountText>- {discount || 5}%</WrapperDiscountText>
+        <WrapperDiscountText>- {discount || 0}%</WrapperDiscountText>
       </WrapperPriceText>
     </WrapperCardStyle>
   );

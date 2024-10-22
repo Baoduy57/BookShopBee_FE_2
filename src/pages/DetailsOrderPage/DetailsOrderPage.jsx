@@ -66,20 +66,20 @@ const DetailsOrderPage = () => {
               </WrapperContentInfo>
             </WrapperInfoUser>
             <WrapperInfoUser>
-              <WrapperLabel>Hinh thức giao hang</WrapperLabel>
+              <WrapperLabel>Hình thức giao hàng</WrapperLabel>
               <WrapperContentInfo>
                 <div className="delivery-info">
                   <span className="name-delivery">FAST </span>Giao hàng tiết
                   kiệm
                 </div>
                 <div className="delivery-fee">
-                  <span>Phi giao hång: </span>
+                  <span>Phí giao hàng: </span>
                   {data?.shippingPrice}
                 </div>
               </WrapperContentInfo>
             </WrapperInfoUser>
             <WrapperInfoUser>
-              <WrapperLabel>Hinh thuc thanh toan</WrapperLabel>
+              <WrapperLabel>Hình thức thanh toán</WrapperLabel>
               <WrapperContentInfo>
                 <div className="payment-info">
                   {orderContant[data?.paymentMethod]}
@@ -103,13 +103,13 @@ const DetailsOrderPage = () => {
               <div style={{ width: "610px" }}>Sản phẩm</div>
               <WrapperItemLabel>Giá</WrapperItemLabel>
               <WrapperItemLabel>Số luợng</WrapperItemLabel>
-              <WrapperItemLabel>Giam giá</WrapperItemLabel>
+              <WrapperItemLabel>Giảm giá</WrapperItemLabel>
             </div>
 
             {data?.orderItems?.map((order) => {
-              console.log("order", order);
+              // console.log("order", order);
               return (
-                <WrapperProduct>
+                <WrapperProduct key={order.id}>
                   <WrapperNameProduct>
                     <img
                       src={order?.image}
@@ -131,7 +131,7 @@ const DetailsOrderPage = () => {
                         height: "70px",
                       }}
                     >
-                      Điện thoại
+                      <WrapperItem>{order?.name}</WrapperItem>
                     </div>
                   </WrapperNameProduct>
                   <WrapperItem>{convertPrice(order?.price)}</WrapperItem>
@@ -148,15 +148,15 @@ const DetailsOrderPage = () => {
               );
             })}
             <WrapperAllPrice>
-              <WrapperItemLabel>Tam tính</WrapperItemLabel>
+              <WrapperItemLabel>Tạm tính</WrapperItemLabel>
               <WrapperItem>{convertPrice(priceMemo)}</WrapperItem>
             </WrapperAllPrice>
             <WrapperAllPrice>
-              <WrapperItemLabel>Phí vận chuyen</WrapperItemLabel>
+              <WrapperItemLabel>Phí vận chuyển</WrapperItemLabel>
               <WrapperItem>{convertPrice(data?.shippingPrice)}</WrapperItem>
             </WrapperAllPrice>
             <WrapperAllPrice>
-              <WrapperItemLabel>Tong cộng</WrapperItemLabel>
+              <WrapperItemLabel>Tổng cộng</WrapperItemLabel>
               <WrapperItem>{convertPrice(data?.totalPrice)}</WrapperItem>
             </WrapperAllPrice>
           </WrapperStyleContent>

@@ -5,11 +5,30 @@ export const WrapperStyleHeader = styled.div`
   padding: 9px 16px;
   border-radius: 4px;
   display: flex;
+  background: #fff;
   align-items: center;
+  justify-content: space-between; /* Đảm bảo căn chỉnh chính xác */
+  /* Đặt ảnh và tên sản phẩm sang bên trái */
+  img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border: 1px solid rgb(238, 238, 238);
+    padding: 2px;
+  }
   span {
     color: rgb(36, 36, 36);
-    font-weight: 400;
+    font-weight: 700;
     font-size: 13px;
+    margin-left: auto; /* Đảm bảo giá nằm bên phải */
+  }
+  div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 10px;
+    width: 260px;
+    white-space: normal; /* Cho phép xuống dòng */
   }
 `;
 
@@ -88,16 +107,14 @@ export const WrapperTotal = styled.div`
 
 export const WrapperItemOrder = styled.div`
   display: flex;
-  align-items: center;
-  padding: 9px 16px;
-  background: #fff;
-  margin-top: 12px;
   flex-direction: column;
-  width: 950px;
-  margin: 0 auto;
+  padding: 16px;
   background: #fff;
+  margin: 12px auto;
+  width: 100%;
+  max-width: 950px;
   border-radius: 6px;
-  box-shadow: 0 12px 12px #ccc;
+  box-shadow: 0 12px 12px rgba(0, 0, 0, 0.1);
 `;
 
 export const WrapperStatus = styled.div`
@@ -112,7 +129,16 @@ export const WrapperStatus = styled.div`
 
 export const WrapperFooterItem = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column; /* Các nút nằm dưới */
   border-top: 1px solid rgb(235, 235, 240);
+  padding-top: 10px;
+  margin-top: 10px;
+  gap: 10px;
+  div {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
 `;

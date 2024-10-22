@@ -44,8 +44,10 @@ const MyOrderPage = () => {
   };
 
   const mutation = useMutationHooks((data) => {
+    // const { id, orderItems } = data;
     const { id, token, orderItems } = data;
     const res = OrderService.cancelOrder(id, token, orderItems);
+    // const res = OrderService.cancelOrder(id, orderItems);
     return res;
   });
 
@@ -53,6 +55,7 @@ const MyOrderPage = () => {
     // console.log("Cancelling order:", order);
     // console.log("Using token:", state?.token);
     mutation.mutate(
+      // { id: order._id, orderItems: order?.orderItems },
       { id: order._id, token: state?.token, orderItems: order?.orderItems },
       {
         onSuccess: () => {

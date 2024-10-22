@@ -253,13 +253,19 @@ const AdminUser = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+
+    onFilter: (value, record) => {
+      const recordValue = record[dataIndex];
+      return recordValue
+        ? recordValue.toString().toLowerCase().includes(value.toLowerCase())
+        : false;
+    },
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
+
     //   render: (text) =>
     //     searchedColumn === dataIndex ? (
     //       <Highlighter
@@ -280,25 +286,25 @@ const AdminUser = () => {
     {
       title: "Name",
       dataIndex: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
+      sorter: (a, b) => (a.name?.length || 0) - (b.name?.length || 0),
       ...getColumnSearchProps("name"),
     },
     {
       title: "Email",
       dataIndex: "email",
-      sorter: (a, b) => a.email.length - b.email.length,
+      sorter: (a, b) => (a.email?.length || 0) - (b.email?.length || 0),
       ...getColumnSearchProps("email"),
     },
     {
       title: "Phone",
       dataIndex: "phone",
-      sorter: (a, b) => a.phone.length - b.phone.length,
+      sorter: (a, b) => (a.phone?.length || 0) - (b.phone?.length || 0),
       ...getColumnSearchProps("phone"),
     },
     {
       title: "Address",
       dataIndex: "address",
-      sorter: (a, b) => a.address.length - b.address.length,
+      sorter: (a, b) => (a.address?.length || 0) - (b.address?.length || 0),
       ...getColumnSearchProps("address"),
     },
     {
@@ -447,7 +453,7 @@ const AdminUser = () => {
   };
   return (
     <div>
-      <WrapperHeader>User Management</WrapperHeader>
+      <WrapperHeader>Quản lý người dùng</WrapperHeader>
 
       <div style={{ marginTop: "20px" }}>
         <TableComponent

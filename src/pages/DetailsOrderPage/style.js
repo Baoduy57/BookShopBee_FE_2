@@ -82,15 +82,24 @@ export const WrapperProduct = styled.div`
 export const WrapperNameProduct = styled.div`
   display: flex;
   align-items: center;
-  width: 610px;
+  width: 700px;
 
   img {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     object-fit: cover;
     border: 1px solid #eee;
     padding: 2px;
-    margin-right: 10px;
+    margin-right: 15px;
+  }
+  div {
+    font-weight: bold;
+    font-size: 16px;
+    color: #333; // Màu chữ đậm hơn
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    max-width: 580px; // Điều chỉnh lại chiều rộng tối đa để tên sản phẩm không bị quá dài
   }
 `;
 
@@ -105,10 +114,14 @@ export const WrapperItemLabel = styled.div`
 
 // Individual data items (price, quantity, discount, total, etc.)
 export const WrapperItem = styled.div`
-  width: 100px;
+  flex-grow: 1; // Sử dụng flex-grow để các cột tự động điều chỉnh kích thước
   text-align: center;
-  font-size: 14px;
-  color: #333;
+  font-size: 16px; // Tăng cỡ chữ
+  font-weight: bold; // Đậm hơn để nổi bật
+  color: #ff5722; // Màu sắc nổi bật hơn cho giá
+  display: flex;
+  justify-content: center; // Đảm bảo căn giữa nội dung bên trong
+  align-items: center;
 `;
 
 export const WrapperAllPrice = styled.div`

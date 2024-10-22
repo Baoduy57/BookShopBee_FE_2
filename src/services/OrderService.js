@@ -105,28 +105,30 @@ export const cancelOrder = async (id, access_token, orderItems) => {
 };
 
 // export const cancelOrder = async (id, orderItems) => {
-//   // Lấy access_token từ LocalStorage
-//   const access_token = JSON.parse(localStorage.getItem("access_token"));
-//   if (!access_token) {
-//     console.error("No access token found");
-//     return;
-//   }
-//   console.log("access token: ", access_token);
+//   const res = await axiosJWT.delete(
+//     `${process.env.REACT_APP_API_TEST}/order/Cancel-Order/${id}`,
 
+//     {
+//       data: orderItems,
+//     }
+//   );
+//   return res.data;
+// };
+
+// export const cancelOrder = async (id, access_token, orderItems) => {
 //   try {
 //     const res = await axiosJWT.delete(
 //       `${process.env.REACT_APP_API_TEST}/order/Cancel-Order/${id}`,
-
 //       {
 //         headers: {
-//           token: `Bearer ${access_token}`,
+//           token: `Bearer ${access_token}`, // Gửi token trong headers để xác thực
 //         },
-//       },
-//       { data: orderItems }
+//         data: orderItems, // Gửi danh sách sản phẩm trong body yêu cầu
+//       }
 //     );
-//     return res.data;
+//     return res.data; // Trả về dữ liệu nhận được từ API
 //   } catch (error) {
 //     console.error("Error canceling order:", error.response || error);
-//     // Có thể xử lý thêm ở đây
+//     throw error; // Ném ra lỗi để xử lý phía trên nếu cần
 //   }
 // };
