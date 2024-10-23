@@ -104,31 +104,15 @@ export const cancelOrder = async (id, access_token, orderItems) => {
   return res.data;
 };
 
-// export const cancelOrder = async (id, orderItems) => {
-//   const res = await axiosJWT.delete(
-//     `${process.env.REACT_APP_API_TEST}/order/Cancel-Order/${id}`,
+export const getAllOrder = async (access_token) => {
+  const res = await axiosJWT.get(
+    `${process.env.REACT_APP_API_TEST}/order/Get-AllOrder`,
 
-//     {
-//       data: orderItems,
-//     }
-//   );
-//   return res.data;
-// };
-
-// export const cancelOrder = async (id, access_token, orderItems) => {
-//   try {
-//     const res = await axiosJWT.delete(
-//       `${process.env.REACT_APP_API_TEST}/order/Cancel-Order/${id}`,
-//       {
-//         headers: {
-//           token: `Bearer ${access_token}`, // Gửi token trong headers để xác thực
-//         },
-//         data: orderItems, // Gửi danh sách sản phẩm trong body yêu cầu
-//       }
-//     );
-//     return res.data; // Trả về dữ liệu nhận được từ API
-//   } catch (error) {
-//     console.error("Error canceling order:", error.response || error);
-//     throw error; // Ném ra lỗi để xử lý phía trên nếu cần
-//   }
-// };
+    {
+      headers: {
+        token: `Bearer ${access_token}`,
+      },
+    }
+  );
+  return res.data;
+};
