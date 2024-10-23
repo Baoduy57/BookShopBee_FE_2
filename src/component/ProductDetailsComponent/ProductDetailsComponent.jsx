@@ -1,5 +1,5 @@
 import { Col, Row, Image, Rate } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import imageProductSmall from "../../assets/images/detail2.webp";
 import {
   WrapperStyleImageSmall,
@@ -21,8 +21,10 @@ import Loading from "../LoadingComponent/Loading";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addOrderProduct, resetOrder } from "../../redux/slides/orderSlide";
-import { convertPrice } from "../../utils";
+import { convertPrice, initFacebookSDK } from "../../utils";
 import * as message from "../Message/Message";
+import LikeButtonComponent from "../LikeButtonComponent/LikeButtonComponent";
+import CommentComponent from "../CommentComponent/CommentComponent";
 
 const ProductDetailsComponent = ({ idProduct }) => {
   const navigate = useNavigate();
@@ -53,7 +55,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
       (!orderRedux && productDetails?.countInStock > 0)
     ) {
       setErrorLimitOrder(false);
-    } else {
+    } else if (productDetails?.countInStock === 0) {
       setErrorLimitOrder(true);
     }
   }, [numProduct]);
@@ -66,6 +68,10 @@ const ProductDetailsComponent = ({ idProduct }) => {
       dispatch(resetOrder());
     };
   }, [order.isSuccessOrder]);
+
+  useEffect(() => {
+    initFacebookSDK();
+  }, []);
 
   const handleChangeCount = (type, limited) => {
     if (type === "increase") {
@@ -214,6 +220,16 @@ const ProductDetailsComponent = ({ idProduct }) => {
             <span className="change-address">Đổi địa chỉ</span>
           </WrapperAddressProduct>
 
+          <LikeButtonComponent
+            style={{ marginTop: "8px" }}
+            dataHref={
+              "https://developers.facebook.com/docs/plugins/"
+              // process.env.REACT_APP_IS_LOCAL
+              //   ? "https://developers.facebook.com/docs/plugins/"
+              //   : window.location.href
+            }
+          ></LikeButtonComponent>
+
           <div
             style={{
               margin: "10px 0",
@@ -282,8 +298,8 @@ const ProductDetailsComponent = ({ idProduct }) => {
                   borderRadius: "5px",
                 }}
                 onClick={handleAddOrderProduct}
-                textButton={"Chọn để mua"}
-                styleTextButton={{ color: "#fff" }}
+                textbutton={"Chọn để mua"}
+                styletextbutton={{ color: "#fff" }}
               ></ButtonComponent>
               {errorLimitOrder && (
                 <div style={{ color: "red" }}>Sản phẩm đã hết hàng</div>
@@ -299,11 +315,20 @@ const ProductDetailsComponent = ({ idProduct }) => {
                 borderRadius: "5px",
                 border: "1px solid rgb(13,92,182)",
               }}
-              textButton={"Mua trả sau"}
-              styleTextButton={{ color: "rgb(13,92,182)" }}
+              textbutton={"Mua trả sau"}
+              styletextbutton={{ color: "rgb(13,92,182)" }}
             ></ButtonComponent>
           </div>
         </Col>
+        <CommentComponent
+          dataHref={
+            "https://developers.facebook.com/docs/plugins/comments#configurator"
+            // process.env.REACT_APP_IS_LOCAL
+            //   ? "https://developers.facebook.com/docs/plugins/comments#configurator"
+            //   : window.location.href
+          }
+          width="1270"
+        ></CommentComponent>
       </Row>
     </Loading>
   );

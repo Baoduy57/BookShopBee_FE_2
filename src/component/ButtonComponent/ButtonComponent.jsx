@@ -4,8 +4,8 @@ import React from "react";
 const ButtonComponent = ({
   size,
   styleButton,
-  styleTextButton,
-  textButton,
+  styletextbutton,
+  textbutton,
   disabled,
   ...rests
 }) => {
@@ -18,7 +18,7 @@ const ButtonComponent = ({
       size={size}
       {...rests}
     >
-      <span style={styleTextButton}>{textButton}</span>
+      <span style={styletextbutton}>{textbutton}</span>
     </Button>
   );
 };

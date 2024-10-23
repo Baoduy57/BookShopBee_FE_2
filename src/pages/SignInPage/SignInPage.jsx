@@ -155,8 +155,8 @@ const SignInPage = () => {
                 borderRadius: "5px",
                 margin: "26px 0 10px",
               }}
-              textButton={"Login"}
-              styleTextButton={{
+              textbutton={"Login"}
+              styletextbutton={{
                 color: "#fff",
                 fontSize: "15px",
                 fontWeight: "700",
