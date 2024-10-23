@@ -1,3 +1,1 @@
-fix bug function cancel order and order by user 
-
-
+Tích hợp plugin like,share, comment của Facebook vào dự án & Fix bug cho dự án
