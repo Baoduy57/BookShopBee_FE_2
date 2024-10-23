@@ -57,7 +57,7 @@ const OrderSuccess = () => {
             <WrapperItemOrderInfo>
               {state.orders?.map((order) => {
                 return (
-                  <WrapperItemOrder>
+                  <WrapperItemOrder key={order?.name}>
                     <div
                       style={{
                         width: "300px",

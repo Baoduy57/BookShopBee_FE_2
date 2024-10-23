@@ -84,7 +84,7 @@ const MyOrderPage = () => {
   const renderProduct = (data) => {
     return data?.map((order) => {
       return (
-        <WrapperStyleHeader>
+        <WrapperStyleHeader key={order?._id}>
           <img
             src={order?.image}
             style={{
@@ -128,7 +128,7 @@ const MyOrderPage = () => {
           <WrapperListOrder>
             {data?.map((order) => {
               return (
-                <WrapperItemOrder key={order._id}>
+                <WrapperItemOrder key={order?._id}>
                   <WrapperStatus>
                     <span style={{ fontSize: "15px", fontWeight: "bold" }}>
                       Trạng thái
@@ -173,8 +173,8 @@ const MyOrderPage = () => {
                           borderRadius: "5px",
                         }}
                         size={40}
-                        textButton={"Hủy đơn hàng"}
-                        styleTextButton={{
+                        textbutton={"Hủy đơn hàng"}
+                        styletextbutton={{
                           color: "rgb(11,116,229)",
                           fontSize: "15px",
                         }}
@@ -188,8 +188,8 @@ const MyOrderPage = () => {
                           borderRadius: "5px",
                         }}
                         size={40}
-                        textButton={"Xem chi tiết"}
-                        styleTextButton={{
+                        textbutton={"Xem chi tiết"}
+                        styletextbutton={{
                           color: "rgb(11,116,229)",
                           fontSize: "15px",
                         }}

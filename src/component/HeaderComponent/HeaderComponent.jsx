@@ -139,7 +139,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
           <Col span={13}>
             <ButtonInputSearch
               size="large"
-              textButton="Tìm kiếm"
+              textbutton="Tìm kiếm"
               border={false}
               placeholder="input search text"
               onChange={onSearch}

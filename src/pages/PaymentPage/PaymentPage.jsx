@@ -194,7 +194,8 @@ const PaymentPage = () => {
       totalPrice: totalPriceMemo,
       user: user?.id,
       isPaid: true,
-      paiAt: details,
+      paiAt: details.update_time,
+      email: user?.email,
     });
   };
 
@@ -392,7 +393,7 @@ const PaymentPage = () => {
             {payment === "paypal" && sdkReady ? (
               <div style={{ width: "320px" }}>
                 <PayPalButton
-                  amount={totalPriceMemo}
+                  amount={Math.round(totalPriceMemo / 30000)}
                   // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
                   onSuccess={onSuccessPaypal}
                   onError={() => {
@@ -411,8 +412,8 @@ const PaymentPage = () => {
                   borderRadius: "5px",
                   border: "none",
                 }}
-                textButton={"Đặt hàng sản phẩm"}
-                styleTextButton={{
+                textbutton={"Đặt hàng sản phẩm"}
+                styletextbutton={{
                   color: "#fff",
                   fontSize: "15px",
                   fontWeight: "700",

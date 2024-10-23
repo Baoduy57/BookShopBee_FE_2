@@ -108,7 +108,7 @@ const HomePage = () => {
             }}
           >
             <WrapperButtonMore
-              textButton={isPreviousData ? "Load more" : "Xem thêm"}
+              textbutton={isPreviousData ? "Load more" : "Xem thêm"}
               type="outline"
               styleButton={{
                 border: "1px solid rgb(11,116,229)",
@@ -125,7 +125,7 @@ const HomePage = () => {
                 products?.total === products?.data?.length ||
                 products?.totalPage === 1
               }
-              styleTextButton={{
+              styletextbutton={{
                 fontWeight: "500",
                 color: products?.total === products?.data?.length && "#fff",
               }}
