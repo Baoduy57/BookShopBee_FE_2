@@ -28,6 +28,7 @@ export const userSlide = createSlice({
         address = "",
         avatar = "",
         city = "",
+        refreshToken = "",
         isAdmin,
       } = action.payload;
       state.id = _id;
@@ -38,6 +39,7 @@ export const userSlide = createSlice({
       state.avatar = avatar;
       state.access_token = access_token;
       state.city = city;
+      state.refreshToken = refreshToken;
       state.isAdmin = isAdmin;
     },
     // resetUser: Đặt lại thông tin người dùng về giá trị mặc định
@@ -50,6 +52,7 @@ export const userSlide = createSlice({
       state.avatar = "";
       state.access_token = "";
       state.city = "";
+      state.refreshToken = "";
       state.isAdmin = false;
     },
   },

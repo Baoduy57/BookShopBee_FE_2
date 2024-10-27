@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   WrapperContent,
   WrapperContentPrice,
@@ -6,14 +6,29 @@ import {
   WrapperTextValue,
 } from "./style";
 import { Checkbox, Rate } from "antd";
+import TypeProduct from "../TypeProduct/TypeProduct";
+import * as ProductService from "../../services/ProductService";
 
 const NavbarComponent = () => {
+  const [typeProducts, setTypeProducts] = useState([]);
+
+  const fetchAllTypeProduct = async () => {
+    const res = await ProductService.getAllTypeProduct();
+    if (res?.status === "OK") {
+      setTypeProducts(res?.data);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllTypeProduct();
+  }, []);
+
   const onChange = {};
   const renderContent = (type, options) => {
     switch (type) {
       case "text":
-        return options.map((option) => {
-          return <WrapperTextValue>{option}</WrapperTextValue>;
+        return options.map((option, index) => {
+          return <WrapperTextValue key={index}>{option}</WrapperTextValue>;
         });
 
       case "checkbox":
@@ -29,9 +44,9 @@ const NavbarComponent = () => {
         );
 
       case "star":
-        return options.map((option) => {
+        return options.map((option, index) => {
           return (
-            <div style={{ display: "flex" }}>
+            <div key={index} style={{ display: "flex" }}>
               <Rate
                 style={{ fontSize: "13px" }}
                 disabled
@@ -43,8 +58,10 @@ const NavbarComponent = () => {
         });
 
       case "price":
-        return options.map((option) => {
-          return <WrapperContentPrice>{option}</WrapperContentPrice>;
+        return options.map((option, index) => {
+          return (
+            <WrapperContentPrice key={index}>{option}</WrapperContentPrice>
+          );
         });
       default:
         return {};
@@ -54,12 +71,9 @@ const NavbarComponent = () => {
     <div>
       <WrapperLabelText>Label</WrapperLabelText>
       <WrapperContent>
-        {renderContent("text", [
-          "Sách Tình cảm",
-          "Sách Bí ẩn",
-          "Sách Kinh dị, giật gân",
-          "Sách truyền cảm hứng",
-        ])}
+        {typeProducts.map((item) => {
+          return <TypeProduct name={item} key={item}></TypeProduct>;
+        })}
       </WrapperContent>
 
       <WrapperContent>

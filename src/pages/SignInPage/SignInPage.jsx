@@ -68,6 +68,10 @@ const SignInPage = () => {
       }
       // Chỉ điều hướng nếu đăng nhập thành công
       localStorage.setItem("access_token", JSON.stringify(data?.access_token)); // Lưu access token vào localStorage
+      localStorage.setItem(
+        "refresh_token",
+        JSON.stringify(data?.refresh_token)
+      );
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token); // Giải mã token bằng jwtDecode
         if (decoded?.id) {
@@ -83,8 +87,10 @@ const SignInPage = () => {
 
   // Sau khi đăng nhập thành công, hàm này được gọi để lấy chi tiết thông tin người dùng và cập nhật vào Redux store thông qua dispatch(updateUser).
   const handleGetDetailsUser = async (id, token) => {
+    const storage = localStorage.getItem("refresh_token");
+    const refreshToken = JSON.parse(storage);
     const res = await UserService.getDetailsUser(id, token);
-    dispatch(updateUser({ ...res?.data, access_token: token }));
+    dispatch(updateUser({ ...res?.data, access_token: token, refreshToken }));
     // console.log("res", res);
   };
   return (

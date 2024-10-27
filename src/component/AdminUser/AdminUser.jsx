@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { WrapperHeader, WrapperUploadFile } from "./style";
-import { Button, Form, Space } from "antd";
+import { Button, Checkbox, Form, Space } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -307,21 +307,38 @@ const AdminUser = () => {
       sorter: (a, b) => (a.address?.length || 0) - (b.address?.length || 0),
       ...getColumnSearchProps("address"),
     },
+    // {
+    //   title: "Admin",
+    //   dataIndex: "isAdmin",
+
+    //   filters: [
+    //     {
+    //       text: "True",
+    //       value: true,
+    //     },
+    //     {
+    //       text: "False",
+    //       value: false,
+    //     },
+    //   ],
+    // },
     {
       title: "Admin",
       dataIndex: "isAdmin",
-
+      render: (isAdmin) => (isAdmin === "TRUE" ? "Admin" : "User"),
       filters: [
         {
-          text: "True",
-          value: true,
+          text: "Admin",
+          value: "TRUE",
         },
         {
-          text: "False",
-          value: false,
+          text: "User",
+          value: "FALSE",
         },
       ],
+      onFilter: (value, record) => record.isAdmin === value,
     },
+
     {
       title: "Action",
       dataIndex: "action",
@@ -499,7 +516,6 @@ const AdminUser = () => {
                 name="name"
               />
             </Form.Item>
-
             <Form.Item
               label="Email"
               name="email"
@@ -511,7 +527,6 @@ const AdminUser = () => {
                 name="email"
               />
             </Form.Item>
-
             <Form.Item
               label="Phone"
               name="phone"
@@ -523,7 +538,20 @@ const AdminUser = () => {
                 name="phone"
               />
             </Form.Item>
-
+            {/* // Thêm Form.Item cho quyền admin trong Form của Drawer */}
+            <Form.Item label="Admin" name="isAdmin" valuePropName="checked">
+              <Checkbox
+                checked={stateUserDetails.isAdmin}
+                onChange={(e) => {
+                  setstateUserDetails((prev) => ({
+                    ...prev,
+                    isAdmin: e.target.checked,
+                  }));
+                }}
+              >
+                Cấp quyền Admin
+              </Checkbox>
+            </Form.Item>
             <Form.Item
               label="Address"
               name="address"
@@ -537,7 +565,6 @@ const AdminUser = () => {
                 name="address"
               />
             </Form.Item>
-
             <Form.Item
               label="Avatar"
               name="avatar"
@@ -568,7 +595,6 @@ const AdminUser = () => {
                 )}
               </WrapperUploadFile>
             </Form.Item>
-
             <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
               <Button type="primary" htmlType="submit">
                 Apply
