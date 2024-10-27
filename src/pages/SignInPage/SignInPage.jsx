@@ -156,7 +156,7 @@ const SignInPage = () => {
               size={40}
               styleButton={{
                 background: "rgb(225,57,69)",
-                height: "48px",
+                height: "49px",
                 width: "100%",
                 borderRadius: "5px",
                 margin: "26px 0 10px",
