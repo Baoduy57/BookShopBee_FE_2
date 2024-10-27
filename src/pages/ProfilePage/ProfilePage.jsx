@@ -138,23 +138,6 @@ const ProfilePage = () => {
               value={name}
               onChange={handleOnchangeName}
             />
-            <ButtonComponent
-              onClick={handleUpdate}
-              size={40}
-              styleButton={{
-                height: "30px",
-                width: "fit-content",
-                border: "1px solid rgb(26,148,256)",
-                borderRadius: "5px",
-                padding: "2px 6px 6px ",
-              }}
-              textbutton={"Update"}
-              styletextbutton={{
-                color: "rgb(26,148,256)",
-                fontSize: "15px",
-                fontWeight: "700",
-              }}
-            ></ButtonComponent>
           </WrapperInput>
 
           <WrapperInput>
@@ -165,23 +148,6 @@ const ProfilePage = () => {
               value={email}
               onChange={handleOnchangeEmail}
             />
-            <ButtonComponent
-              onClick={handleUpdate}
-              size={40}
-              styleButton={{
-                height: "30px",
-                width: "fit-content",
-                border: "1px solid rgb(26,148,256)",
-                borderRadius: "5px",
-                padding: "2px 6px 6px ",
-              }}
-              textbutton={"Update"}
-              styletextbutton={{
-                color: "rgb(26,148,256)",
-                fontSize: "15px",
-                fontWeight: "700",
-              }}
-            ></ButtonComponent>
           </WrapperInput>
 
           <WrapperInput>
@@ -192,23 +158,6 @@ const ProfilePage = () => {
               value={phone}
               onChange={handleOnchangePhone}
             />
-            <ButtonComponent
-              onClick={handleUpdate}
-              size={40}
-              styleButton={{
-                height: "30px",
-                width: "fit-content",
-                border: "1px solid rgb(26,148,256)",
-                borderRadius: "5px",
-                padding: "2px 6px 6px ",
-              }}
-              textbutton={"Update"}
-              styletextbutton={{
-                color: "rgb(26,148,256)",
-                fontSize: "15px",
-                fontWeight: "700",
-              }}
-            ></ButtonComponent>
           </WrapperInput>
 
           <WrapperInput>
@@ -219,23 +168,6 @@ const ProfilePage = () => {
               value={address}
               onChange={handleOnchangeAddress}
             />
-            <ButtonComponent
-              onClick={handleUpdate}
-              size={40}
-              styleButton={{
-                height: "30px",
-                width: "fit-content",
-                border: "1px solid rgb(26,148,256)",
-                borderRadius: "5px",
-                padding: "2px 6px 6px ",
-              }}
-              textbutton={"Update"}
-              styletextbutton={{
-                color: "rgb(26,148,256)",
-                fontSize: "15px",
-                fontWeight: "700",
-              }}
-            ></ButtonComponent>
           </WrapperInput>
 
           <WrapperInput>
@@ -261,24 +193,25 @@ const ProfilePage = () => {
               value={avatar}
               onChange={handleOnchangeAvatar}
             /> */}
-            <ButtonComponent
-              onClick={handleUpdate}
-              size={40}
-              styleButton={{
-                height: "30px",
-                width: "fit-content",
-                border: "1px solid rgb(26,148,256)",
-                borderRadius: "5px",
-                padding: "2px 6px 6px ",
-              }}
-              textbutton={"Update"}
-              styletextbutton={{
-                color: "rgb(26,148,256)",
-                fontSize: "15px",
-                fontWeight: "700",
-              }}
-            ></ButtonComponent>
           </WrapperInput>
+
+          <ButtonComponent
+            onClick={handleUpdate}
+            size={40}
+            styleButton={{
+              height: "30px",
+              width: "fit-content",
+              border: "1px solid rgb(26,148,256)",
+              borderRadius: "5px",
+              padding: "2px 6px 6px ",
+            }}
+            textbutton={"Update"}
+            styletextbutton={{
+              color: "rgb(26,148,256)",
+              fontSize: "15px",
+              fontWeight: "700",
+            }}
+          ></ButtonComponent>
         </WrapperContentProfile>
       </Loading>
     </div>

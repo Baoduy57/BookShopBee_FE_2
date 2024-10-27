@@ -7,7 +7,7 @@ import axios from "axios";
 import { isJsonString } from "./utils";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUser } from "./redux/slides/userSlide";
+import { resetUser, updateUser } from "./redux/slides/userSlide";
 import * as UserService from "./services/UserService";
 import Loading from "./component/LoadingComponent/Loading";
 
@@ -43,8 +43,16 @@ function App() {
   // Mục đích: Gửi yêu cầu API lấy thông tin người dùng từ server qua UserService.getDetailsUser. Nếu thành công, nó sẽ cập nhật Redux store với thông tin người dùng và access token thông qua updateUser.
   const handleGetDetailsUser = async (id, token) => {
     try {
+      let storageRefreshToken = localStorage.getItem("refresh_token");
+      const refreshToken = JSON.parse(storageRefreshToken);
       const res = await UserService.getDetailsUser(id, token); // Gọi API lấy thông tin người dùng
-      dispatch(updateUser({ ...res?.data, access_token: token })); // Cập nhật vào Redux store
+      dispatch(
+        updateUser({
+          ...res?.data,
+          access_token: token,
+          refreshToken: refreshToken,
+        })
+      ); // Cập nhật vào Redux store
     } catch (error) {
       console.error("Failed to get user details:", error); // Xử lý lỗi nếu có
     }
@@ -55,14 +63,21 @@ function App() {
     async (config) => {
       const currentTime = new Date();
       const { decoded } = handleDecoded();
+      let storageRefreshToken = localStorage.getItem("refresh_token");
+      const refreshToken = JSON.parse(storageRefreshToken);
+      const decodedRefreshToken = jwtDecode(refreshToken);
       if (decoded?.exp < currentTime.getTime() / 1000) {
         try {
-          const data = await UserService.refreshToken(); // Refresh token
-          config.headers["token"] = `Bearer ${data?.access_token}`; // Gán access token mới vào header
-          localStorage.setItem(
-            "access_token",
-            JSON.stringify(data?.access_token)
-          ); // Lưu token mới
+          if (decodedRefreshToken?.exp > currentTime.getTime() / 1000) {
+            const data = await UserService.refreshToken(refreshToken); // Refresh token
+            config.headers["token"] = `Bearer ${data?.access_token}`; // Gán access token mới vào header
+            localStorage.setItem(
+              "access_token",
+              JSON.stringify(data?.access_token)
+            ); // Lưu token mới
+          } else {
+            dispatch(resetUser);
+          }
         } catch (error) {
           console.error("Failed to refresh token:", error);
           // Bạn có thể xử lý lỗi refresh token ở đây, ví dụ: redirect về trang login
