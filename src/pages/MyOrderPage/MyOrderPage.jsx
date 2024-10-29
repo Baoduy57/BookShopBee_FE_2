@@ -43,20 +43,38 @@ const MyOrderPage = () => {
     });
   };
 
-  const mutation = useMutationHooks((data) => {
-    // const { id, orderItems } = data;
-    const { id, token, orderItems } = data;
-    const res = OrderService.cancelOrder(id, token, orderItems);
-    // const res = OrderService.cancelOrder(id, orderItems);
-    return res;
-  });
+  // const mutation = useMutationHooks((data) => {
+  //   // const { id, orderItems } = data;
+  //   const { id, orderItems } = data;
+  //   const res = OrderService.cancelOrder(id, orderItems);
+  //   // const res = OrderService.cancelOrder(id, orderItems);
+  //   return res;
+  // });
+
+  const mutation = useMutationHooks(
+    (data) => OrderService.cancelOrder(data.id, data.orderItems),
+    {
+      onSuccess: (response) => {
+        if (response.status === "SUCCESS") {
+          Message.success("Hủy đơn hàng thành công");
+          queryOrder.refetch(); // Tải lại danh sách đơn hàng
+        } else {
+          Message.error(response.message || "Hủy đơn hàng thất bại");
+        }
+      },
+      onError: (error) => {
+        Message.error("Hủy đơn hàng thất bại");
+        console.error("Error cancelling order:", error);
+      },
+    }
+  );
 
   const handleCancelOrder = (order) => {
     // console.log("Cancelling order:", order);
     // console.log("Using token:", state?.token);
     mutation.mutate(
       // { id: order._id, orderItems: order?.orderItems },
-      { id: order._id, token: state?.token, orderItems: order?.orderItems },
+      { id: order._id, orderItems: order?.orderItems },
       {
         onSuccess: () => {
           queryOrder.refetch();
@@ -79,7 +97,7 @@ const MyOrderPage = () => {
       Message.error("Hủy đơn hàng thất bại");
     }
   }, [isSuccessCancel, isErrorCancel, dataCancel]);
-  console.log("Order data:", data);
+  // console.log("Order data:", data);
 
   const renderProduct = (data) => {
     return data?.map((order) => {
@@ -126,8 +144,8 @@ const MyOrderPage = () => {
         <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
           <h4>Đơn hàng của tôi</h4>
           <WrapperListOrder>
-            {data?.map((order) => {
-              return (
+            {Array.isArray(data) && data.length > 0 ? (
+              data.map((order) => (
                 <WrapperItemOrder key={order?._id}>
                   <WrapperStatus>
                     <span style={{ fontSize: "15px", fontWeight: "bold" }}>
@@ -197,8 +215,10 @@ const MyOrderPage = () => {
                     </div>
                   </WrapperFooterItem>
                 </WrapperItemOrder>
-              );
-            })}
+              ))
+            ) : (
+              <p>Không có đơn hàng để hiển thị.</p>
+            )}
           </WrapperListOrder>
         </div>
       </WrapperContainer>
