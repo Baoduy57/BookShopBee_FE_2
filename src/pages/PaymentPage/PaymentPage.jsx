@@ -23,7 +23,7 @@ import * as PaymentService from "../../services/PaymentService";
 import { updateUser } from "../../redux/slides/userSlide";
 import { useNavigate } from "react-router-dom";
 import { removeAllOrderProduct } from "../../redux/slides/orderSlide";
-import { PayPalButton } from "react-paypal-button-v2";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 const PaymentPage = () => {
   const order = useSelector((state) => state.order);
@@ -135,7 +135,6 @@ const PaymentPage = () => {
 
   const mutationAddOrder = useMutationHooks((data) => {
     const { token, ...rests } = data;
-    // console.log("Data being sent to createOrder:", rests); // Kiểm tra xem `userId` có trong `rests` không
     const res = OrderService.createOrder(rests, token);
     return res;
   });
@@ -391,16 +390,27 @@ const PaymentPage = () => {
               </WrapperTotal>
             </div>
             {payment === "paypal" && sdkReady ? (
-              <div style={{ width: "320px" }}>
-                <PayPalButton
-                  amount={Math.round(totalPriceMemo / 30000)}
-                  // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
-                  onSuccess={onSuccessPaypal}
-                  onError={() => {
-                    alert("Error!");
-                  }}
-                />
-              </div>
+              <PayPalScriptProvider
+                options={{
+                  "client-id":
+                    "AWlye21WWa9dKNAdGpUWKt-BOe7V5cOfbI8xLSvn7HAse8V8ojmHVIBh_OVhyD8q7wrwaL3OWk5pXiQ0",
+                }}
+              >
+                <div style={{ width: "320px" }}>
+                  <PayPalButtons
+                    amount={Math.round(totalPriceMemo / 30000)}
+                    onApprove={(data, actions) => {
+                      return actions.order.capture().then((details) => {
+                        // Sau khi xác nhận thanh toán thành công, gọi hàm onSuccessPaypal
+                        onSuccessPaypal(details, data);
+                      });
+                    }}
+                    onError={() => {
+                      alert("Đã xảy ra lỗi khi thanh toán với PayPal!");
+                    }}
+                  />
+                </div>
+              </PayPalScriptProvider>
             ) : (
               <ButtonComponent
                 onClick={() => handleAddOrder()}
