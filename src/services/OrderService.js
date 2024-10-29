@@ -90,16 +90,11 @@ export const getDetailsOrder = async (id) => {
   }
 };
 
-export const cancelOrder = async (id, access_token, orderItems) => {
-  const res = await axiosJWT.delete(
+export const cancelOrder = async (id, orderItems) => {
+  const res = await axios.delete(
     `${process.env.REACT_APP_API_TEST}/order/Cancel-Order/${id}`,
 
-    {
-      headers: {
-        token: `Bearer ${access_token}`,
-      },
-      data: orderItems,
-    }
+    { data: orderItems }
   );
   return res.data;
 };

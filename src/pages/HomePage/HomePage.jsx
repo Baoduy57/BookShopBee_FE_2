@@ -19,7 +19,7 @@ const HomePage = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const [limit, setLimit] = useState(6);
+  const [limit, setLimit] = useState(12);
 
   const [typeProducts, setTypeProducts] = useState([]);
 
@@ -136,7 +136,6 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-      HomePage
     </Loading>
   );
 };
