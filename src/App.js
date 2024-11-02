@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { resetUser, updateUser } from "./redux/slides/userSlide";
 import * as UserService from "./services/UserService";
 import Loading from "./component/LoadingComponent/Loading";
-
+import DriftChat from "./component/DriftChat/DriftChat";
 function App() {
   // Redux State (user): Truy cập vào state user từ Redux store, chứa thông tin về người dùng đã đăng nhập.
   const user = useSelector((state) => state.user);
@@ -113,6 +113,7 @@ function App() {
             })}
           </Routes>
         </Router>
+        {user?.email && <DriftChat email={user.email} />}
       </Loading>
     </div>
   );
