@@ -74,8 +74,14 @@ const SignInPage = () => {
       );
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token); // Giải mã token bằng jwtDecode
-        if (decoded?.id) {
+        if (decoded?.id && decoded?.email) {
           handleGetDetailsUser(decoded?.id, data?.access_token);
+          // Xác định người dùng trong Drift bằng email
+          window.drift.on("ready", () => {
+            window.drift.identify(decoded?.id, {
+              email: decoded?.email,
+            });
+          });
         }
       }
       navigate("/"); // Điều hướng sang trang chính khi đăng nhập thành công
@@ -117,7 +123,7 @@ const SignInPage = () => {
           <p>Login or Sign in</p>
           <InputForm
             style={{ marginBottom: "13px" }}
-            placeholder="duy@gmail"
+            placeholder="email@gmail"
             value={email}
             onChange={handleOnchangeEmail}
           />
