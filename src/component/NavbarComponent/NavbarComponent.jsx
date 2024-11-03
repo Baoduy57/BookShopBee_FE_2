@@ -38,7 +38,11 @@ const NavbarComponent = () => {
             onChange={onChange}
           >
             {options.map((option) => {
-              return <Checkbox value={option.value}>{option.label}</Checkbox>;
+              return (
+                <Checkbox key={option.value} value={option.value}>
+                  {option.label}
+                </Checkbox>
+              );
             })}
           </Checkbox.Group>
         );

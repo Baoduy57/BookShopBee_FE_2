@@ -48,7 +48,7 @@ const TypeProductPage = () => {
         style={{
           width: "100%",
           background: "#efefef",
-          height: "calc(150vh - 65px)",
+          height: "fit-content",
         }}
       >
         <div style={{ width: "1270px", margin: "0 auto", height: "100%" }}>

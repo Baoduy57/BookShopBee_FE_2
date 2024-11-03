@@ -75,16 +75,22 @@ const SignInPage = () => {
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token); // Giải mã token bằng jwtDecode
         if (decoded?.id && decoded?.email) {
+          localStorage.setItem("user_email", decoded.email); // Lưu email người dùng vào localStorage
           handleGetDetailsUser(decoded?.id, data?.access_token);
-          // Xác định người dùng trong Drift bằng email
-          window.drift.on("ready", () => {
-            window.drift.identify(decoded?.id, {
-              email: decoded?.email,
-            });
-          });
+          // Chờ Drift khởi tạo xong trước khi gọi identify
+          const waitForDrift = setInterval(() => {
+            if (window.drift) {
+              clearInterval(waitForDrift);
+              window.drift.on("ready", () => {
+                window.drift.identify(decoded?.id, {
+                  email: decoded?.email,
+                });
+              });
+            }
+          }, 100); // kiểm tra mỗi 100ms
         }
       }
-      navigate("/"); // Điều hướng sang trang chính khi đăng nhập thành công
+      navigate(location?.state || "/"); // Điều hướng sang trang chính khi đăng nhập thành công
     } else if (isError || data?.status === "ERR") {
       // Hiển thị thông báo lỗi nếu có
       message.error(data?.message || "Đăng nhập thất bại, vui lòng thử lại.");

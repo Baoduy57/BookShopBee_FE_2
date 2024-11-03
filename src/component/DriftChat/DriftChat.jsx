@@ -2,19 +2,31 @@ import { useEffect } from "react";
 
 const initiateDrift = (email) => {
   if (window.drift) {
-    window.drift.identify(email, {
-      email: email,
-    });
+    try {
+      window.drift.identify(email, {
+        email: email,
+      });
+    } catch (error) {
+      console.error("Error initializing Drift:", error);
+    }
+  } else {
+    console.warn("Drift is not initialized.");
   }
 };
 
 const reloadDrift = (email) => {
   if (window.drift) {
-    // Đóng cửa sổ chat hiện tại
-    window.drift.reset();
+    try {
+      // Đóng cửa sổ chat hiện tại
+      window.drift.reset();
 
-    // Khởi tạo lại Drift với email mới
-    initiateDrift(email);
+      // Khởi tạo lại Drift với email mới
+      initiateDrift(email);
+    } catch (error) {
+      console.error("Error reloading Drift:", error);
+    }
+  } else {
+    console.warn("Drift is not initialized.");
   }
 };
 
