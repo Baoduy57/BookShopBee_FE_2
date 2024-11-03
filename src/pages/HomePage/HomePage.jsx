@@ -19,7 +19,7 @@ const HomePage = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const [limit, setLimit] = useState(12);
+  const [limit, setLimit] = useState(18);
 
   const [typeProducts, setTypeProducts] = useState([]);
 
@@ -71,7 +71,7 @@ const HomePage = () => {
           style={{
             backgroundColor: "#efefef",
             margin: "0 auto",
-            height: "2000px",
+            height: "fit-content",
             width: "1270px",
           }}
         >
