@@ -182,9 +182,9 @@ const SignInPage = () => {
             ></ButtonComponent>
           </Loading>
 
-          <p>
+          {/* <p>
             <WrapperTextLight>Forgot password</WrapperTextLight>
-          </p>
+          </p> */}
           <p>
             No account ?
             <WrapperTextLight onClick={handleNavigateSignUp}>
