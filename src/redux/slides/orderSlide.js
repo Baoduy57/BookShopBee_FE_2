@@ -1,3 +1,4 @@
+// Redux dùng để quản lý trạng thái của đơn hàng, bao gồm các thông tin về sản phẩm, địa chỉ giao hàng, phương thức thanh toán và trạng thái thanh toán/giao hàng.
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -24,6 +25,9 @@ export const orderSlide = createSlice({
   initialState,
   // reducers: Đây là nơi định nghĩa các hàm reducer để thay đổi state của slice. Mỗi reducer là một hàm nhận state hiện tại và một action. Khi action được gọi, reducer sẽ cập nhật state dựa trên logic định nghĩa trong đó.
   reducers: {
+    // Thêm một sản phẩm vào đơn hàng.
+    // Nếu sản phẩm đã tồn tại và số lượng còn trong kho cho phép, thì tăng amount của sản phẩm đó.
+    // Nếu sản phẩm chưa tồn tại trong orderItems, thêm mới vào danh sách.
     addOrderProduct: (state, action) => {
       const { orderItem } = action.payload;
       const itemOrder = state?.orderItems?.find(
@@ -38,11 +42,11 @@ export const orderSlide = createSlice({
         state.orderItems.push(orderItem);
       }
     },
-
+    // Đặt lại trạng thái isSuccessOrder về false. Thường dùng khi cần reset trạng thái sau khi thêm đơn hàng thành công.
     resetOrder: (state) => {
       state.isSuccessOrder = false;
     },
-
+    // Tăng số lượng (amount) của sản phẩm trong orderItems và orderItemsSelected.
     increaseAmount: (state, action) => {
       const { idProduct } = action.payload;
       const itemOrder = state?.orderItems?.find(
@@ -56,7 +60,7 @@ export const orderSlide = createSlice({
         itemOrderSelected.amount++;
       }
     },
-
+    // Giảm số lượng (amount) của sản phẩm trong orderItems và orderItemsSelected.
     decreaseAmount: (state, action) => {
       const { idProduct } = action.payload;
       const itemOrder = state?.orderItems?.find(
@@ -70,7 +74,7 @@ export const orderSlide = createSlice({
         itemOrderSelected.amount--;
       }
     },
-
+    // Xóa một sản phẩm khỏi orderItems và orderItemsSelected dựa trên idProduct được cung cấp.
     removeOrderProduct: (state, action) => {
       const { idProduct } = action.payload;
       const itemOrder = state?.orderItems?.filter(
@@ -82,7 +86,7 @@ export const orderSlide = createSlice({
       state.orderItems = itemOrder;
       state.orderItemsSelected = itemOrderSelected;
     },
-
+    // Xóa toàn bộ các sản phẩm có trong danh sách listChecked khỏi orderItems và orderItemsSelected.
     removeAllOrderProduct: (state, action) => {
       const { listChecked } = action.payload;
       const itemOrders = state?.orderItems?.filter(
@@ -94,7 +98,7 @@ export const orderSlide = createSlice({
       state.orderItems = itemOrders;
       state.orderItemsSelected = itemOrdersSelected;
     },
-
+    // Chọn một số sản phẩm để đưa vào orderItemsSelected dựa trên listChecked.
     selectedOrder: (state, action) => {
       const { listChecked } = action.payload;
       const orderSelected = [];
@@ -109,6 +113,8 @@ export const orderSlide = createSlice({
 });
 
 // Action creators are generated for each case reducer function
+// Các action creator (addOrderProduct, increaseAmount, decreaseAmount,...) được tự động tạo dựa trên tên các reducer, giúp dễ dàng gọi các action trong các thành phần React.
+// orderSlide.reducer là reducer chính của slice, sẽ được tích hợp vào Redux store để quản lý toàn bộ trạng thái liên quan đến đơn hàng.
 export const {
   addOrderProduct,
   increaseAmount,
