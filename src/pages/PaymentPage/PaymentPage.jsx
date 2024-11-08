@@ -82,10 +82,19 @@ const PaymentPage = () => {
     return 0;
   }, [order]);
 
+  // const diliveryPriceMemo = useMemo(() => {
+  //   if (priceMemo >= 200000) {
+  //     return 20000;
+  //   } else if (priceMemo === 0) {
+  //     return 0;
+  //   } else {
+  //     return 50000;
+  //   }
+  // }, [priceMemo]);
   const diliveryPriceMemo = useMemo(() => {
-    if (priceMemo >= 200000) {
+    if (priceMemo >= 200000 && priceMemo < 500000) {
       return 20000;
-    } else if (priceMemo === 0) {
+    } else if (priceMemo >= 500000 || order?.orderItemsSelected?.length === 0) {
       return 0;
     } else {
       return 50000;
