@@ -71,10 +71,22 @@ const PaymentPage = () => {
     return result;
   }, [order]);
 
+  // const priceDiscountMemo = useMemo(() => {
+  //   const result = order?.orderItemsSelected?.reduce((total, cur) => {
+  //     const totalDiscount = cur.discount ? cur.discount : 0;
+  //     return total + (priceMemo * (totalDiscount * cur.amount)) / 100;
+  //   }, 0);
+  //   if (Number(result)) {
+  //     return result;
+  //   }
+  //   return 0;
+  // }, [order]);
   const priceDiscountMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
       const totalDiscount = cur.discount ? cur.discount : 0;
-      return total + (priceMemo * (totalDiscount * cur.amount)) / 100;
+      // return total + (priceMemo * (totalDiscount * cur.amount)) / 100;
+      // Tổng giảm giá cho tất cả sản phẩm đã chọn
+      return total + ((cur.price * totalDiscount) / 100) * cur.amount;
     }, 0);
     if (Number(result)) {
       return result;
